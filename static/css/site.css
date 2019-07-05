@@ -10,5 +10,32 @@ body {
 }
 
 .body-content {
+    height: 80vh;
+}
+
+.body-content main {
     background-color: bisque;
+    text-align: center;
+    height: 80%;
+    align-items: center;
+    align-content: center;
+}
+#upload-form {
+    align-self: center;
+}
+/*For uploading and downloading.*/
+#upload-form .form-element {
+    background-color: whitesmoke;
+    position: relative;
+    top: 20vh;
+    margin: 5vh;
+    width: 25%;
+    height: 25%;
+    align-self: center;
+    border-radius: 20%;
+    font-size: 5vh;
+}
+
+#upload-form .form-element:hover {
+    background-color: aquamarine;
 }

@@ -4,6 +4,7 @@
         <title>Imagif</title>
         <link rel="stylesheet" href="../static/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="../static/css/site.css" />
+
     </head>
     <body>
         <header>
@@ -32,16 +33,23 @@
                         </div>
                 </nav>
         </header>
+
         <div class="body-content">
             <main>
                 <h1>Welcome to Imagif!</h1>
                 <!--TODO: Expand welcoming screen and add an upload button-->
+                <form id="upload-form" method="POST" action="OnImageRecieved" enctype="multipart/form-data">
+                    <input class="form-element" id="file-input" type="file" name="file" accept="image/jpeg, image/png"/><br>
+                    <input class="form-element" type="submit" value="Convert"/>
+                </form>
             </main>
+
             <footer>
                 <hr/>
                 <p>&copy; Tarcan Gul and Vaastav Arora 2019</p>
             </footer>
         </div>
+        <script type="text/javascript" src="../static/js/site.js"></script>
         <script src="../static/lib/jquery/dist/jquery.js"></script>
         <script src="../static/lib/bootstrap/dist/js/bootstrap.js"></script>
     </body>
