@@ -36,12 +36,34 @@
 
         <div class="body-content">
             <main>
-                <h1>Welcome to Imagif!</h1>
+                
                 <!--TODO: Expand welcoming screen and add an upload button-->
-                <form id="upload-form" method="POST" action="OnImageRecieved" enctype="multipart/form-data">
-                    <input class="form-element" id="file-input" type="file" name="file" accept="image/jpeg, image/png"/><br>
-                    <input class="form-element" type="submit" value="Convert"/>
-                </form>
+                <div class="form-container">
+                    <h1>Welcome to Imagif!</h1>
+                    <form id="upload-form" method="POST" action="OnImageRecieved" enctype="multipart/form-data">
+                        <br>
+                        <div class="form-element">
+                            <input id="file-input" type="file" name="file" accept="image/jpeg, image/png"/><br>
+                        </div>
+                        <div class="form-element">
+                            <select>
+                                    <option value="plain">Plain</option>
+                                    <option value="noise_switch">Noise Switch</option>
+                            </select>
+                        </div>         
+                        <div class="form-element">
+                            <input class="form-element" type="submit" value="Convert"/>
+                        </div> 
+                    </form>
+                </div>
+                <div class="image-container">
+                    {%if convertedGif %}
+                        <img id="imageGifField" src="../static/images/output.gif" alt="uploaded gif image" />
+                    {% else %}
+                        <img id="imageField" src="#" alt="uploaded image" style="visibility: hidden;"/>
+                        <h4 id="imageFieldEmpty">No image is uploaded yet.</h4>
+                    {% endif %}
+                </div>
             </main>
 
             <footer>
