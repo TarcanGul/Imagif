@@ -3,13 +3,15 @@ from flask import render_template, url_for, request, redirect
 import sys
 import io
 import os
-import utils.ImagifAlgorithms as algo
+import utils.ImagifAlgorithms as ImagifAlgorithms
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = os.path.dirname(os.path.realpath(__file__))
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+UTILS_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\utils"
+app.config['UTILS_FOLDER'] = UTILS_FOLDER
+
+algo = ImagifAlgorithms.Imagif(UTILS_FOLDER)
 
 @app.route("/")
 def serveIndex():
@@ -20,8 +22,12 @@ def handleImage():
     inputFile = request.files['file']
     print("Hello " + inputFile.filename, file=sys.stderr)
     filename = secure_filename(inputFile.filename)
-    inputFile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    algo.use_noise_switch(inputFile.filename)
+    inputFile.save(os.path.join(app.config['UTILS_FOLDER'], filename))
+    print(type(inputFile), file=sys.stderr)
+    print(filename, file=sys.stderr)
+    print(algo.get_target_dir(), file=sys.stderr)
+    algo.use_noise_switch(filename, "output.gif")
+    os.remove(os.path.join(app.config['UTILS_FOLDER'], filename))
     return "Success."    
 
 if __name__ == "__main__":
