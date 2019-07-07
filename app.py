@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template, url_for, request, redirect, session
+from flask import render_template, url_for, request, redirect, session, abort, flash, jsonify
 import sys
 import io
 import os
@@ -7,8 +7,7 @@ import utils.ImagifAlgorithms as ImagifAlgorithms
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-exportedGif = False
-
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
 
 UTILS_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\utils"
 app.config['UTILS_FOLDER'] = UTILS_FOLDER
@@ -18,28 +17,45 @@ algo = ImagifAlgorithms.Imagif(UTILS_FOLDER, app.config['IMAGE_OUTPUT_FOLDER'])
 
 @app.route("/")
 def serveIndex():
-    print("convertedGif" in session, file=sys.stderr)
-    if "convertedGif" in session:
-        print(session.get("convertedGif"), file=sys.stderr)
-        return render_template("index.html", convertedGif=session.get("convertedGif"))
-    else:
-        return render_template("index.html", convertedGif=False)
-   
+    return render_template("index.html")
     
-
 @app.route("/OnImageRecieved", methods=['POST'])
 def handleImage():
-    inputFile = request.files['file']
-    print("Hello " + inputFile.filename, file=sys.stderr)
-    filename = secure_filename(inputFile.filename)
-    inputFile.save(os.path.join(app.config['UTILS_FOLDER'], filename))
-    print(type(inputFile), file=sys.stderr)
-    print(filename, file=sys.stderr)
-    print(algo.get_target_dir(), file=sys.stderr)
-    algo.use_noise_switch(filename, "output.gif")
-    os.remove(os.path.join(app.config['UTILS_FOLDER'], filename))
-    session["convertedGif"]= True
-    return redirect(url_for("serveIndex"))   
+    if request.method == 'POST':
+        print(request.form, file=sys.stderr)
+        try:
+            inputFile = request.files['file']
+        except KeyError as e:
+            print(e, file=sys.stderr)
+        if inputFile == None:
+            return render_template("index.html", convertedGif=False)
+        print("Hello " + inputFile.filename, file=sys.stderr)
+        filename = secure_filename(inputFile.filename)
+        inputFile.save(os.path.join(app.config['UTILS_FOLDER'], filename))
+        print(type(inputFile), file=sys.stderr)
+        print(filename, file=sys.stderr)
+        print(algo.get_target_dir(), file=sys.stderr)
+        chosenAlgorithm = request.form['algorithm']
+        if chosenAlgorithm == 'plain':
+            algo.use_plain(filename, "output.gif")
+        elif chosenAlgorithm == 'noise_switch':
+            algo.use_noise_switch(filename, "output.gif")
+        else:
+            abort(500)
+        os.remove(os.path.join(app.config['UTILS_FOLDER'], filename))
+        flash("Enjoy your gif!")
+        return jsonify({"State": "Success"})   
+    else:
+        return jsonify({"State" : "Error"})
+
+# No caching at all for API endpoints.
+@app.after_request
+def add_header(response):
+    # response.cache_control.no_store = True
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="localhost", port=5000)

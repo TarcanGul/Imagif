@@ -40,13 +40,13 @@
                 <!--TODO: Expand welcoming screen and add an upload button-->
                 <div class="form-container">
                     <h1>Welcome to Imagif!</h1>
-                    <form id="upload-form" method="POST" action="OnImageRecieved" enctype="multipart/form-data">
+                    <form id="upload-form" enctype="multipart/form-data">
                         <br>
                         <div class="form-element">
-                            <input id="file-input" type="file" name="file" accept="image/jpeg, image/png"/><br>
+                            <input id="file-input" type="file" name="file" accept="image/jpeg, image/png" required/><br>
                         </div>
                         <div class="form-element">
-                            <select>
+                            <select id="algorithm" name="algorithm" required>
                                     <option value="plain">Plain</option>
                                     <option value="noise_switch">Noise Switch</option>
                             </select>
@@ -57,12 +57,13 @@
                     </form>
                 </div>
                 <div class="image-container">
-                    {%if convertedGif %}
-                        <img id="imageGifField" src="../static/images/output.gif" alt="uploaded gif image" />
-                    {% else %}
-                        <img id="imageField" src="#" alt="uploaded image" style="visibility: hidden;"/>
-                        <h4 id="imageFieldEmpty">No image is uploaded yet.</h4>
-                    {% endif %}
+                        <div class="gif-container" id="gif-contain">
+
+                        </div>
+                    <div class="container-without-gif">
+                            <img id="imageField" src="#" alt="uploaded image" style="visibility: hidden;"/>
+                            <h4 id="imageFieldEmpty">No image is uploaded yet.</h4>
+                    </div>
                 </div>
             </main>
 
