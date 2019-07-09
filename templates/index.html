@@ -2,36 +2,26 @@
 <html>
     <head>
         <title>Imagif</title>
-        <link rel="stylesheet" href="../static/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="../static/css/site.css" />
 
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="../static/lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../static/css/site.css" />
     </head>
     <body>
         <header>
-                <nav class="navbar navbar-inverse navbar-fixed-top">
-                        <div class="container">
-                            <div class="navbar-header">
-                                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                                    <span class="sr-only">Toggle navigation</span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
-                                </button>
-                                <a href="#" class="navbar-brand">Imagif</a>
-                            </div>
-                            <div class="navbar-collapse collapse">
-                                <ul class="nav navbar-nav">
-                                    <li><a href="#">Home</a></li>
-                                </ul>
-                                <div class="pull-right">
-                                    <ul class="nav navbar-nav">
-                                        <li><a class="navbar-right-side" href="#">Log In</a></li>
-                                        <li><a class="navbar-right-side" href="#">Join us!</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                </nav>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="#">Imagif</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                  <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                      <a class="nav-link" href="#">Download the algorithms library!<span class="sr-only">(current)</span></a>
+                    </li>
+                  </ul>
+                </div>
+              </nav>
         </header>
 
         <div class="body-content">
@@ -50,10 +40,8 @@
                                     <option value="plain">Plain</option>
                                     <option value="noise_switch">Noise Switch</option>
                             </select>
+                            <input id="submit-button" type="submit" value="Convert"/>
                         </div>         
-                        <div class="form-element">
-                            <input class="form-element" type="submit" value="Convert"/>
-                        </div> 
                     </form>
                 </div>
                 <div class="image-container">
@@ -72,8 +60,13 @@
                 <p>&copy; Tarcan Gul and Vaastav Arora 2019</p>
             </footer>
         </div>
+        <script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
         <script type="text/javascript" src="../static/js/site.js"></script>
-        <script src="../static/lib/jquery/dist/jquery.js"></script>
-        <script src="../static/lib/bootstrap/dist/js/bootstrap.js"></script>
+       
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="../static/lib/bootstrap/js/bootstrap.min.js"></script>
     </body>
 </html>

@@ -1,4 +1,6 @@
-var reader = new FileReader();
+$(document).ready(function () {
+    var reader = new FileReader();
+
 document.getElementById("file-input").addEventListener("input", function(){
     console.log("Callback here?");
     if(this.files && this.files[0])
@@ -22,7 +24,7 @@ document.getElementById('upload-form').addEventListener("submit", function(event
     console.log(algorithm);
     var formData = new FormData(form);
     console.log(formData);
-    jQuery.ajax({
+    $.ajax({
         contentType: false,
         processData: false,
         data: formData,
@@ -38,19 +40,28 @@ document.getElementById('upload-form').addEventListener("submit", function(event
         {
             console.log("Success!");
             imagePath = "../images/output.gif";
-            jQuery(".container-without-gif").empty();
-            jQuery(".gif-container").empty();
-            jQuery(".gif-container").append('<img id="imageGifField" src="../static/images/output.gif" alt="uploaded gif image" />');
-            jQuery(".gif-container").append('<button>Download</button>');
+            $(".container-without-gif").empty();
+            $(".gif-container").empty();
+            $(".gif-container").append('<img id="imageGifField" src="../static/images/output.gif" alt="uploaded gif image" />');
+            $(".gif-container").append('<h3>Enjoy your hot gif!</h3>');
+            $(".gif-container").append('<button class="form-element" id="downloadButton">Download</button>');
+
         }
         else
         {
-            $(".gif-container").append('<h2>Error!</h2>')
+            $("#downloadButton").off();
+            $(".gif-container").empty();
+            $(".gif-container").append('<h2>Error!</h2>');
         }
-    })
-
-
+    });
+    $(".gif-container").empty();
+    $(".container-without-gif").empty();
+    $(".container-without-gif").append('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
+    $(".container-without-gif").append("<h2>Processing...</h2>");
 }, false);
+
+  });
+
 
 
 
