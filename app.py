@@ -44,6 +44,9 @@ def handleImage():
         elif chosenAlgorithm == 'noise_switch':
             outputFilename = algo.use_noise_switch(filename)
             print(outputFilename, file=sys.stderr)
+        elif chosenAlgorithm == 'party_mode':
+            outputFilename = algo.use_party_mode(filename)
+            print(outputFilename, file=sys.stderr)
         else:
             abort(500)
         os.remove(os.path.join(app.config['UTILS_FOLDER'], filename))
