@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template, url_for, request, redirect, session, abort, flash, jsonify
+from flask import render_template, url_for, request, redirect, session, abort, flash, jsonify, make_response, send_file
 import sys
 import io
 import os
@@ -13,7 +13,7 @@ UTILS_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\utils"
 app.config['UTILS_FOLDER'] = UTILS_FOLDER
 app.config['IMAGE_OUTPUT_FOLDER'] = os.path.dirname(os.path.realpath(__file__)) + "\\static\\images"
 app.secret_key = 'dljsaklqk24e21cjn!Ew@@dsw5'
-algo = ImagifAlgorithms.Imagif(UTILS_FOLDER, app.config['IMAGE_OUTPUT_FOLDER'])
+algo = ImagifAlgorithms.Imagif(UTILS_FOLDER, UTILS_FOLDER + "\\outputs")
 
 @app.route("/")
 def serveIndex():
@@ -34,19 +34,18 @@ def handleImage():
         inputFile.save(os.path.join(app.config['UTILS_FOLDER'], filename))
         print(type(inputFile), file=sys.stderr)
         print(filename, file=sys.stderr)
-        print(algo.get_target_dir(), file=sys.stderr)
+        print(algo.get_read_dir(), file=sys.stderr)
         chosenAlgorithm = request.form['algorithm']
         if chosenAlgorithm == 'plain':
-            algo.use_plain(filename, "output.gif")
+            print(algo.use_plain(filename), file=sys.stderr)
         elif chosenAlgorithm == 'noise_switch':
-            algo.use_noise_switch(filename, "output.gif")
+            print(algo.use_noise_switch(filename), file=sys.stderr)
         else:
             abort(500)
         os.remove(os.path.join(app.config['UTILS_FOLDER'], filename))
-        flash("Enjoy your gif!")
-        return jsonify({"State": "Success"})   
+        return jsonify({"state": "success", "image" : "blue" })   
     else:
-        return jsonify({"State" : "Error"})
+        return jsonify({"state" : "error"})
 
 # No caching at all for API endpoints.
 @app.after_request

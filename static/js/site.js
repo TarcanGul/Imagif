@@ -36,16 +36,14 @@ document.getElementById('upload-form').addEventListener("submit", function(event
     })
     .done(function(data){
         //Do something with image.
-        if(data.State == "Success")
+        if(data.state == "success")
         {
             console.log("Success!");
-            imagePath = "../images/output.gif";
             $(".container-without-gif").empty();
             $(".gif-container").empty();
-            $(".gif-container").append('<img id="imageGifField" src="../static/images/output.gif" alt="uploaded gif image" />');
+            //$(".gif-container").append('<img id="imageGifField" src="data:image/gif;base64, "' + data.image +' alt="uploaded gif image" />');
             $(".gif-container").append('<h3>Enjoy your hot gif!</h3>');
             $(".gif-container").append('<button class="form-element" id="downloadButton">Download</button>');
-
         }
         else
         {
