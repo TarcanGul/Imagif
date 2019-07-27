@@ -1,5 +1,4 @@
-$(document).ready(function () {
-    var reader = new FileReader();
+var reader = new FileReader();
 
 document.getElementById("file-input").addEventListener("input", function(){
     console.log("Callback here?");
@@ -41,9 +40,12 @@ document.getElementById('upload-form').addEventListener("submit", function(event
             console.log("Success!");
             $(".container-without-gif").empty();
             $(".gif-container").empty();
-            //$(".gif-container").append('<img id="imageGifField" src="data:image/gif;base64, "' + data.image +' alt="uploaded gif image" />');
+            $(".gif-container").append(`<img id="imageGifField" src="../static/images/outputs/` + data.image + `" alt="uploaded gif image" 
+            style="padding-top: 2vh; height:100%; width:100%"/>`);
             $(".gif-container").append('<h3>Enjoy your hot gif!</h3>');
-            $(".gif-container").append('<button class="form-element" id="downloadButton">Download</button>');
+            $(".gif-container").append(`<a href="../static/images/outputs/` + data.image + `" download>
+                                <button class="form-element">Download</button>
+                                </a>`);
         }
         else
         {
@@ -57,8 +59,6 @@ document.getElementById('upload-form').addEventListener("submit", function(event
     $(".container-without-gif").append('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
     $(".container-without-gif").append("<h2>Processing...</h2>");
 }, false);
-
-  });
 
 
 

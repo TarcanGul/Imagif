@@ -10,10 +10,11 @@ app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
 
 UTILS_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\utils"
+IMAGE_OUTPUT_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\static\\images\\outputs"
 app.config['UTILS_FOLDER'] = UTILS_FOLDER
-app.config['IMAGE_OUTPUT_FOLDER'] = os.path.dirname(os.path.realpath(__file__)) + "\\static\\images"
+app.config['IMAGE_OUTPUT_FOLDER'] = IMAGE_OUTPUT_FOLDER
 app.secret_key = 'dljsaklqk24e21cjn!Ew@@dsw5'
-algo = ImagifAlgorithms.Imagif(UTILS_FOLDER, UTILS_FOLDER + "\\outputs")
+algo = ImagifAlgorithms.Imagif(UTILS_FOLDER, IMAGE_OUTPUT_FOLDER)
 
 @app.route("/")
 def serveIndex():
@@ -36,14 +37,17 @@ def handleImage():
         print(filename, file=sys.stderr)
         print(algo.get_read_dir(), file=sys.stderr)
         chosenAlgorithm = request.form['algorithm']
+        outputFilename = ""
         if chosenAlgorithm == 'plain':
-            print(algo.use_plain(filename), file=sys.stderr)
+            outputFilename = algo.use_plain(filename)
+            print(outputFilename, file=sys.stderr)
         elif chosenAlgorithm == 'noise_switch':
-            print(algo.use_noise_switch(filename), file=sys.stderr)
+            outputFilename = algo.use_noise_switch(filename)
+            print(outputFilename, file=sys.stderr)
         else:
             abort(500)
         os.remove(os.path.join(app.config['UTILS_FOLDER'], filename))
-        return jsonify({"state": "success", "image" : "blue" })   
+        return jsonify({"state": "success", "image" : outputFilename })   
     else:
         return jsonify({"state" : "error"})
 
