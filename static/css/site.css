@@ -22,7 +22,7 @@ body {
     align-content: center;
 }
 .form-container {
-    flex: 2;
+    flex: 1;
     display: grid;
     grid-auto-columns: 1fr;
     align-items: center;
@@ -33,6 +33,7 @@ body {
 .image-container {
     flex: 1;
     margin-right: 5%;
+    max-height: 100%;
 }
 
 .image-container #imageField, #imageGifField{
@@ -49,12 +50,13 @@ body {
     margin-left: 5vh;
 }
 
-.form-element input, select, button {
+.form-element input,.form-element select,.form-element button{
     background-color: whitesmoke;
     align-self: center;
     border-radius: 10%;
     font-size: 5vh;
     flex:1;
+
 }
 
 #submit-button {
@@ -64,12 +66,12 @@ body {
 }
 
 #algorithm {
-    width: 30%;
+    width: 50%;
     height: 60%;
     font-size: 100%;
 }
 
-.form-element input:hover {
+.form-element input:hover, .form-element button:hover{
     background-color: aquamarine;
 }
 
