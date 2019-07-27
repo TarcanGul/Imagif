@@ -1,9 +1,20 @@
 var reader = new FileReader();
 
+let uploadingImageView = 
+` <img id="imageField" src="#" alt="uploaded image" style="visibility: hidden;"/>
+<h4 id="imageFieldEmpty">No image is uploaded yet.</h4> `
+
+document.querySelector(".container-without-gif").innerHTML = uploadingImageView;
+
 document.getElementById("file-input").addEventListener("input", function(){
     console.log("Callback here?");
     if(this.files && this.files[0])
     {
+        $(".gif-container").empty();
+        if( document.querySelector(".container-without-gif").innerHTML == "")
+        {
+            document.querySelector(".container-without-gif").innerHTML = uploadingImageView;
+        }
         reader.onload = function(e){
             document.getElementById("imageField").setAttribute('src', e.target.result);
             document.getElementById("imageField").style.visibility = "visible";
@@ -56,8 +67,8 @@ document.getElementById('upload-form').addEventListener("submit", function(event
     });
     $(".gif-container").empty();
     $(".container-without-gif").empty();
-    $(".container-without-gif").append('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
-    $(".container-without-gif").append("<h2>Processing...</h2>");
+    document.querySelector(".container-without-gif").innerHTML = `<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>
+    <h2>Processing...</h2>`
 }, false);
 
 
