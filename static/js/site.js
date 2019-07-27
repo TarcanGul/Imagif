@@ -56,7 +56,7 @@ document.getElementById('upload-form').addEventListener("submit", function(event
             $(".gif-container").append(`<img id="imageGifField" src="../static/images/outputs/` + data.image + `" alt="uploaded gif image" 
             style="padding-top: 2vh; height:100%; width:100%"/>`);
             $(".gif-container").append('<h3>Enjoy your hot gif!</h3>');
-            $(".gif-container").append(`<a class="form-element" href='../static/images/outputs/` + data.image + `'"><button class="form-element">Download</button></a>`);
+            $(".gif-container").append(`<a class="form-element" href='../static/images/outputs/` + data.image + `'" download target="_blank"><button class="form-element">Download</button></a>`);
             document.querySelector("#welcoming-text").innerHTML = "Feel free to convert another!";
         }
         else

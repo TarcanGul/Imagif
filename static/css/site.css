@@ -53,16 +53,20 @@ body {
 .form-element input,.form-element select,.form-element button{
     background-color: whitesmoke;
     align-self: center;
-    border-radius: 10%;
     font-size: 5vh;
     flex:1;
 
+}
+
+.form-element select,.form-element button{
+    border-radius: 10%;
 }
 
 #submit-button {
     position: relative;
     left: 10vh;
     width: 40%;
+    border-radius: 10%;
 }
 
 #algorithm {
