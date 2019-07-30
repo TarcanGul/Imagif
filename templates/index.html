@@ -17,9 +17,12 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                   <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                      <a class="nav-link" href="#">Download the algorithms library!<span class="sr-only">(current)</span></a>
+                      <a class="nav-link" href="../static/files/ImagifAlgorithms.zip" download>Download the algorithms library!<span class="sr-only">(current)</span></a>
                     </li>
                   </ul>
+                </div>
+                <div class="right nav-link">
+                    <a href="/login">Login</a>
                 </div>
               </nav>
         </header>
@@ -56,9 +59,24 @@
 
             <footer>
                 <hr/>
-                <p>&copy; Tarcan Gul and Vaastav Arora 2019</p>
+                <p>&copy; Tarcan Gul 2019</p>
             </footer>
         </div>
+        <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
+        <script>
+            // Your web app's Firebase configuration
+            var firebaseConfig = {
+              apiKey: "AIzaSyBewX9k6W7DZECtGjChZtiog9n1vhqLO9w",
+              authDomain: "imagif-199a8.firebaseapp.com",
+              databaseURL: "https://imagif-199a8.firebaseio.com",
+              projectId: "imagif-199a8",
+              storageBucket: "",
+              messagingSenderId: "79256708094",
+              appId: "1:79256708094:web:49cafe3feeca2510"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+          </script>
         <script
   src="https://code.jquery.com/jquery-3.4.1.js"
   integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="

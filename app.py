@@ -5,9 +5,18 @@ import io
 import os
 import utils.ImagifAlgorithms as ImagifAlgorithms
 from werkzeug.utils import secure_filename
+import json
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
+
+with open("oauth.json") as clientFile:
+    data = json.load(clientFile)
+    print(data, file=sys.stderr)
+    app.config['CLIENT_ID'] = data["web"]["client_id"]
+    app.config['CLIENT_SECRET'] = data["web"]["client_secret"]
+
+
 
 UTILS_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\utils"
 IMAGE_OUTPUT_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\static\\images\\outputs"
@@ -53,6 +62,9 @@ def handleImage():
         return jsonify({"state": "success", "image" : outputFilename })   
     else:
         return jsonify({"state" : "error"})
+@app.route("/login")
+def loginPage():
+    return render_template('auth.html')
 
 # No caching at all for API endpoints.
 @app.after_request
