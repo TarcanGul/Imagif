@@ -30,7 +30,12 @@
         <div class="body-content">
             <main>
                 <div class="form-container">
-                    <h1 id="welcoming-text">Welcome to Imagif!</h1>
+                  {% if username %}
+                  <h1 id="welcoming-text">Welcome {{username}}!</h1>
+                  {% else %}
+                  <h1 id="welcoming-text">Welcome to Imagif!</h1>
+                  {% endif %}
+
                     <form id="upload-form" enctype="multipart/form-data">
                         <br>
                         <div class="form-element">

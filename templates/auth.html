@@ -10,7 +10,7 @@
     <body>
         <header>
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-                <a class="navbar-brand" href="#">Imagif</a>
+                <a class="navbar-brand" href="/">Imagif</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon"></span>
                 </button>
@@ -32,6 +32,9 @@
                 <div class="account-form">
                     <form name="sign-up" id="sign-up-form" onsubmit="return false;">
                         <div class="form-element">
+                            <p>Username: <input autocomplete="off" name="username" required></p>
+                          </div>
+                        <div class="form-element">
                           <p>Email:<input autocomplete="off" name="email" type="email" required></p>
                         </div>
                         <div class="form-element">
@@ -52,7 +55,7 @@
                           <p>Password:<input name="password" type="password" pattern=".{6,}"  required title="6 characters minimum" required/></p>
                         </div>
                         <div class="form-element">
-                          <p><input id="loginInput" class="form-element" type="submit" value="Login!" /></p>
+                          <p><input id="loginInput" class="form-element" type="submit" value="Login" /></p>
                         </div>
                     </form>   
                 </div>         

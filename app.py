@@ -10,13 +10,8 @@ import json
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
 
-with open("oauth.json") as clientFile:
-    data = json.load(clientFile)
-    print(data, file=sys.stderr)
-    app.config['CLIENT_ID'] = data["web"]["client_id"]
-    app.config['CLIENT_SECRET'] = data["web"]["client_secret"]
-
-
+projectID = "https://imagif-199a8.firebaseio.com/"
+#firebase = firebase.FirebaseApplication(projectID, None)
 
 UTILS_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\utils"
 IMAGE_OUTPUT_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\static\\images\\outputs"
@@ -27,7 +22,10 @@ algo = ImagifAlgorithms.Imagif(UTILS_FOLDER, IMAGE_OUTPUT_FOLDER)
 
 @app.route("/")
 def serveIndex():
-    return render_template("index.html")
+    if 'currentUser' in session:
+        return render_template("index.html", username=session['currentUser'])
+    else:
+        return render_template("index.html")
     
 @app.route("/OnImageRecieved", methods=['POST'])
 def handleImage():
@@ -65,6 +63,18 @@ def handleImage():
 @app.route("/login")
 def loginPage():
     return render_template('auth.html')
+
+#TODO: Handle login, add to database after sign up, bring the list of gifs from the database.
+@app.route("/handleLogin", methods=['POST'])
+def handleLogin():
+    print(request.is_json, file=sys.stderr)
+    login_response = request.get_json()
+    email = login_response["email"]
+    password = login_response["password"]
+    print("Logged in as: " + email, file=sys.stderr)
+    session['currentUser'] = email
+    return jsonify({"redirect" : "/"})
+    #Add email to database if doesn't exist. Actually do that in signup.
 
 # No caching at all for API endpoints.
 @app.after_request

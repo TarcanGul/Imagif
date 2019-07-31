@@ -16,6 +16,7 @@ var firebaseConfig = {
     let password = document.forms["sign-up"]["password"].value;
     firebase.auth().createUserWithEmailAndPassword(email, password).then(function(){
         document.querySelector(".on-sign-up-success").innerHTML = "Sign-up successful!";
+        //Request for database.
     }
     ).catch(function(error) {
     // Handle Errors here.
@@ -23,17 +24,34 @@ var firebaseConfig = {
     var errorMessage = error.message;
     console.log(errorMessage);
     });
+});
 
-    document.querySelector('#login-form').addEventListener('submit', function(){
+document.querySelector('#login-form').addEventListener('submit', function(){
+    console.log("button pressed");
     let email = document.forms["login"]["email"].value;
     let password = document.forms["login"]["password"].value;
+    let authData = {
+        "email" : email,
+        "password" : password
+    };
     firebase.auth().signInWithEmailAndPassword(email, password).then(function(){
-        console.log("login success");              
+        console.log("email successful");
+        $.ajax({
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(authData),
+            url: '/handleLogin',
+            type: 'POST',
+            success: function(data){
+                console.log("Successfully connected the server.");
+                console.log(data["redirect"]);
+                window.location.href = data["redirect"];
+            }
+        });         
     }).catch(function(error) {
     // Handle Errors here.
     var errorCode = error.code;
     var errorMessage = error.message;
     console.log(errorMessage);
-    });;
     });
 });
