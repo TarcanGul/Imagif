@@ -11,19 +11,16 @@ body {
 
 .body-content main{
     display: flex;
+    text-align: center;
 }
 
-.account-form{
-    text-align: center;
-    flex:2;
-    align-self: center;
-    align-content: center;
-    align-self: center;
+.account-form {
+    flex: 1;
+    align-self: flex-start;
 }
 
 .form-element input,.form-element select,.form-element button{
     background-color: whitesmoke;
-    align-self: center;
     font-size: 5vh;
 }
 

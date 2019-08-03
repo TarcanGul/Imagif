@@ -48,7 +48,7 @@ document.getElementById('upload-form').addEventListener("submit", function(event
     })
     .done(function(data){
         //Do something with image.
-        if(data.state == "success")
+        if(data.state === "success")
         {
             console.log("Success!");
             $(".container-without-gif").empty();

@@ -22,9 +22,27 @@
                   </ul>
                 </div>
                 <div class="right nav-link">
-                    <a href="/login">Login</a>
+                    <ul class="navbar-nav mr-auto">
+                    {% if username %}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Your Gifs</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/logout">Log out</a>
+                    </li>
+                    {% else %}
+                    <a href="/login">Signup/Login</a>
+                    {% endif %}
+                    </ul>
                 </div>
               </nav>
+        <div class="notification">
+          {% with message = get_flashed_messages(category_filter=["feedback"])[0] %}
+          {% if message %}
+            <h5>{{message}}</h5>
+          {% endif %}
+          {% endwith %}
+        </div>
         </header>
 
         <div class="body-content">

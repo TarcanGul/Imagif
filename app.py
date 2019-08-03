@@ -6,31 +6,38 @@ import os
 import utils.ImagifAlgorithms as ImagifAlgorithms
 from werkzeug.utils import secure_filename
 import json
+import psycopg2
+import psycopg2.errorcodes
+import hashlib
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
 
-projectID = "https://imagif-199a8.firebaseio.com/"
-#firebase = firebase.FirebaseApplication(projectID, None)
+with open("config.json") as config_file:
+    config = json.load(config_file)
 
 UTILS_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\utils"
 IMAGE_OUTPUT_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\static\\images\\outputs"
 app.config['UTILS_FOLDER'] = UTILS_FOLDER
 app.config['IMAGE_OUTPUT_FOLDER'] = IMAGE_OUTPUT_FOLDER
-app.secret_key = 'dljsaklqk24e21cjn!Ew@@dsw5'
+app.secret_key = config["secret_key"]
 algo = ImagifAlgorithms.Imagif(UTILS_FOLDER, IMAGE_OUTPUT_FOLDER)
+
+def hashPassword(raw_password):
+    raw_password.encode("utf-8")
+    return hashlib.sha224(raw_password.encode()).hexdigest()
 
 @app.route("/")
 def serveIndex():
     if 'currentUser' in session:
-        return render_template("index.html", username=session['currentUser'])
+        currentSession = session['currentUser']
+        return render_template("index.html", username=currentSession['username'])
     else:
         return render_template("index.html")
     
 @app.route("/OnImageRecieved", methods=['POST'])
 def handleImage():
     if request.method == 'POST':
-        print(request.form, file=sys.stderr)
         try:
             inputFile = request.files['file']
         except KeyError as e:
@@ -40,41 +47,76 @@ def handleImage():
         print("Hello " + inputFile.filename, file=sys.stderr)
         filename = secure_filename(inputFile.filename)
         inputFile.save(os.path.join(app.config['UTILS_FOLDER'], filename))
-        print(type(inputFile), file=sys.stderr)
-        print(filename, file=sys.stderr)
-        print(algo.get_read_dir(), file=sys.stderr)
         chosenAlgorithm = request.form['algorithm']
         outputFilename = ""
         if chosenAlgorithm == 'plain':
             outputFilename = algo.use_plain(filename)
-            print(outputFilename, file=sys.stderr)
         elif chosenAlgorithm == 'noise_switch':
             outputFilename = algo.use_noise_switch(filename)
-            print(outputFilename, file=sys.stderr)
         elif chosenAlgorithm == 'party_mode':
             outputFilename = algo.use_party_mode(filename)
-            print(outputFilename, file=sys.stderr)
         else:
             abort(500)
+        #TODO: Flash message saying that the gif is saved under my gifs.
         os.remove(os.path.join(app.config['UTILS_FOLDER'], filename))
         return jsonify({"state": "success", "image" : outputFilename })   
     else:
         return jsonify({"state" : "error"})
+
 @app.route("/login")
 def loginPage():
     return render_template('auth.html')
 
+@app.route("/logout")
+def logout():
+    session.pop('currentUser', None)
+    flash('Logged out from user ' + session["currentUser"]["username"] + ".", "feedback")
+    return redirect(url_for('serveIndex'))
+
 #TODO: Handle login, add to database after sign up, bring the list of gifs from the database.
 @app.route("/handleLogin", methods=['POST'])
 def handleLogin():
-    print(request.is_json, file=sys.stderr)
     login_response = request.get_json()
     email = login_response["email"]
     password = login_response["password"]
-    print("Logged in as: " + email, file=sys.stderr)
-    session['currentUser'] = email
-    return jsonify({"redirect" : "/"})
-    #Add email to database if doesn't exist. Actually do that in signup.
+    conn = psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"])
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT * FROM userinfo WHERE email = %s;", (email,))
+            result = cur.fetchone()
+            if result:
+                if result[2] == hashPassword(password):
+                    session['currentUser'] = {"username" : result[0], "id" : result[3]}
+                    return jsonify({"redirect" : "/", "status" : "success"})
+                else:
+                    return jsonify({"status" : "failure", "reason" : "password"})
+            else:
+                return jsonify({"status" : "failure", "reason" : "no account"})
+
+@app.route("/handleSignup", methods=['POST'])
+def handleSignup():
+    response = request.get_json()
+    email = response["email"]
+    raw_password = response["password"]
+    raw_password.encode("utf-8")
+    password = hashlib.sha224(raw_password.encode())
+    username = response["username"]
+    print(email, file=sys.stderr)
+    try:
+        conn = psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"])
+        cur = conn.cursor()
+        cur.execute("INSERT INTO userinfo VALUES (%s,%s,%s);", (username, email, password.hexdigest()))
+        cur.execute("SELECT currval(pg_get_serial_sequence('userinfo','id'));")
+        user_id = cur.fetchone()
+        conn.commit()
+        session['currentUser'] = {"username" : username ,  "id" : user_id[0]}
+        flash('Sign up successful for ' + username + '!' +" Your gifs will be available anytime under 'Your Gifs'!", "feedback")
+    except psycopg2.errors.lookup(psycopg2.errorcodes.UNIQUE_VIOLATION):
+        return jsonify({'status' : 'failure', 'reason':'second account with email', 'email' : email})
+    finally:
+        cur.close()
+        conn.close()
+    return jsonify({'status' : 'success', 'redirect' : '/'})
 
 # No caching at all for API endpoints.
 @app.after_request
