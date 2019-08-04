@@ -1,79 +1,43 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Imagif</title>
-
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="../static/lib/bootstrap/css/bootstrap.min.css">
-        <link rel="stylesheet" href="../static/css/auth.css" />
-    </head>
-    <body>
-        <header>
-            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-                <a class="navbar-brand" href="/">Imagif</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                  <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                  <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                      <a class="nav-link" href="../static/files/ImagifAlgorithms.zip" download>Download the algorithms library!<span class="sr-only">(current)</span></a>
-                    </li>
-                  </ul>
+{% extends "layout.html" %}
+{% block content %}
+<main>
+      <div class="account-form">
+          <form name="sign-up" id="sign-up-form" onsubmit="return false;">
+              <div class="form-element-text">
+                  <p>Username<input autocomplete="off" name="username" required></p>
                 </div>
-              </nav>
-        </header>
-
-        <div class="body-content">
-            <main>
-                <div class="account-form">
-                    <form name="sign-up" id="sign-up-form" onsubmit="return false;">
-                        <div class="form-element">
-                            <p>Username<input autocomplete="off" name="username" required></p>
-                          </div>
-                        <div class="form-element">
-                          <p>Email<input autocomplete="off" name="email" type="email" required></p>
-                        </div>
-                        <div class="form-element">
-                          <p>Password (6 characters minimum) <input name="password" type="password" pattern=".{6,}"  required title="6 characters minimum" required/></p>
-                        </div>
-                        <div class="form-element">
-                            <h6 class="sign-up-response"></h6>
-                        </div>
-                        <div class="form-element">
-                          <p><input id="signUpInput" class="form-element" type="submit" value="Sign up!" /></p>
-                        </div>
-                      </form>   
-                </div>
-                <div class="account-form">
-                    <form name="login" id="login-form" onsubmit="return false;">
-                        <div class="form-element">
-                          <p>Email<input autocomplete="off" name="email" type="email" required></p>
-                        </div>
-                        <div class="form-element">
-                          <p>Password<input name="password" type="password" required/></p>
-                        </div>
-                        <div class="form-element">
-                            <h6 class="login-response"></h6>
-                        </div>
-                        <div class="form-element">
-                          <p><input id="loginInput" class="form-element" type="submit" value="Login" /></p>
-                        </div> 
-                    </form>   
-                </div>         
-            </main>
-            <footer>
-                <hr/>
-                <p>&copy; Tarcan Gul 2019</p>
-            </footer>
-        </div>
-        <script src="../static/js/auth.js"></script>
-        <script
-  src="https://code.jquery.com/jquery-3.4.1.js"
-  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
-  crossorigin="anonymous"></script>
-       
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="../static/lib/bootstrap/js/bootstrap.min.js"></script>
-    </body>
-</html>
+              <div class="form-element-text">
+                <p>Email<input autocomplete="off" name="email" type="email" required></p>
+              </div>
+              <div class="form-element-text">
+                <p>Password (6 characters minimum) <input name="password" type="password" pattern=".{6,}"  required title="6 characters minimum" required/></p>
+              </div>
+              <div class="form-element">
+                  <h6 class="sign-up-response"></h6>
+              </div>
+              <div class="form-element">
+                <p><input id="signUpInput" class="form-element" type="submit" value="Sign up!" /></p>
+              </div>
+            </form>   
+      </div>
+      <div class="account-form">
+          <form name="login" id="login-form" onsubmit="return false;">
+              <div class="form-element-text">
+                <p>Email<input autocomplete="off" name="email" type="email" required></p>
+              </div>
+              <div class="form-element-text">
+                <p>Password<input name="password" type="password" required/></p>
+              </div>
+              <div class="form-element">
+                  <h6 class="login-response"></h6>
+              </div>
+              <div class="form-element">
+                <p><input id="loginInput" class="form-element" type="submit" value="Login" /></p>
+              </div> 
+          </form>   
+      </div>         
+</main>
+{% endblock %}
+{% block extend_js %}
+<script type="text/javascript" src="../static/js/auth.js"></script>
+{% endblock %}

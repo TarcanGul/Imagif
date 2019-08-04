@@ -7,9 +7,9 @@ let uploadingImageView =
 document.querySelector(".container-without-gif").innerHTML = uploadingImageView;
 
 document.getElementById("file-input").addEventListener("input", function(){
-    console.log("Callback here?");
     if(this.files && this.files[0])
     {
+        document.querySelector(".notification").innerHTML = "";
         $(".gif-container").empty();
         if( document.querySelector(".container-without-gif").innerHTML == "")
         {
@@ -50,7 +50,6 @@ document.getElementById('upload-form').addEventListener("submit", function(event
         //Do something with image.
         if(data.state === "success")
         {
-            console.log("Success!");
             $(".container-without-gif").empty();
             $(".gif-container").empty();
             $(".gif-container").append(`<img id="imageGifField" src="../static/images/outputs/` + data.image + `" alt="uploaded gif image" 
@@ -58,6 +57,14 @@ document.getElementById('upload-form').addEventListener("submit", function(event
             $(".gif-container").append('<h3>Enjoy your hot gif!</h3>');
             $(".gif-container").append(`<a class="form-element" href='../static/images/outputs/` + data.image + `'" download target="_blank"><button class="form-element">Download</button></a>`);
             document.querySelector("#welcoming-text").innerHTML = "Feel free to convert another!";
+            if(data.authorized)
+            {
+                document.querySelector(".notification").innerHTML = `<h5>Gif saved under 'Your gifs'.</h5>`;
+            }
+            else
+            {
+                document.querySelector(".notification").innerHTML = `<h5>If you don't download it now, the image will not be saved. Signed up users enjoy the benefit of autosaving gifs! Consider being a part of us.</h5>`
+            }
         }
         else
         {

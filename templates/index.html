@@ -1,112 +1,36 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Imagif</title>
+{% extends "layout.html" %}
+{% block content %}
+<main>
+      <div class="form-container">
+        {% if username %}
+        <h1 id="welcoming-text">Welcome {{username}}!</h1>
+        {% else %}
+        <h1 id="welcoming-text">Welcome to Imagif!</h1>
+        {% endif %}
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="../static/lib/bootstrap/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../static/css/site.css" />
-    </head>
-    <body>
-        <header>
-            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-                <a class="navbar-brand" href="#">Imagif</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                  <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                  <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                      <a class="nav-link" href="../static/files/ImagifAlgorithms.zip" download>Download the algorithms library!<span class="sr-only">(current)</span></a>
-                    </li>
-                  </ul>
-                </div>
-                <div class="right nav-link">
-                    <ul class="navbar-nav mr-auto">
-                    {% if username %}
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Your Gifs</a>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/logout">Log out</a>
-                    </li>
-                    {% else %}
-                    <a href="/login">Signup/Login</a>
-                    {% endif %}
-                    </ul>
-                </div>
-              </nav>
-        <div class="notification">
-          {% with message = get_flashed_messages(category_filter=["feedback"])[0] %}
-          {% if message %}
-            <h5>{{message}}</h5>
-          {% endif %}
-          {% endwith %}
-        </div>
-        </header>
+          <form id="upload-form" enctype="multipart/form-data">
+              <br>
+              <div class="form-element">
+                  <input id="file-input" type="file" name="file" accept="image/jpeg, image/png" required/><br>
+              </div>
+              <div class="form-element">
+                  <select id="algorithm" name="algorithm" required>
+                          <option value="plain">Plain</option>
+                          <option value="noise_switch">Noise Switch</option>
+                          <option value="party_mode">Party Mode!</option>
+                  </select>
+                  <input id="submit-button" type="submit" value="Convert"/>
+              </div>         
+          </form>
+      </div>
+      <div class="image-container">
+              <div class="gif-container" id="gif-contain">
 
-        <div class="body-content">
-            <main>
-                <div class="form-container">
-                  {% if username %}
-                  <h1 id="welcoming-text">Welcome {{username}}!</h1>
-                  {% else %}
-                  <h1 id="welcoming-text">Welcome to Imagif!</h1>
-                  {% endif %}
-
-                    <form id="upload-form" enctype="multipart/form-data">
-                        <br>
-                        <div class="form-element">
-                            <input id="file-input" type="file" name="file" accept="image/jpeg, image/png" required/><br>
-                        </div>
-                        <div class="form-element">
-                            <select id="algorithm" name="algorithm" required>
-                                    <option value="plain">Plain</option>
-                                    <option value="noise_switch">Noise Switch</option>
-                                    <option value="party_mode">Party Mode!</option>
-                            </select>
-                            <input id="submit-button" type="submit" value="Convert"/>
-                        </div>         
-                    </form>
-                </div>
-                <div class="image-container">
-                        <div class="gif-container" id="gif-contain">
-
-                        </div>
-                    <div class="container-without-gif">
-                            <img id="imageField" src="#" alt="uploaded image" style="visibility: hidden;"/>
-                            <h4 id="imageFieldEmpty">No image is uploaded yet.</h4>
-                    </div>
-                </div>
-            </main>
-
-            <footer>
-                <hr/>
-                <p>&copy; Tarcan Gul 2019</p>
-            </footer>
-        </div>
-        <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
-        <script>
-            // Your web app's Firebase configuration
-            var firebaseConfig = {
-              apiKey: "AIzaSyBewX9k6W7DZECtGjChZtiog9n1vhqLO9w",
-              authDomain: "imagif-199a8.firebaseapp.com",
-              databaseURL: "https://imagif-199a8.firebaseio.com",
-              projectId: "imagif-199a8",
-              storageBucket: "",
-              messagingSenderId: "79256708094",
-              appId: "1:79256708094:web:49cafe3feeca2510"
-            };
-            // Initialize Firebase
-            firebase.initializeApp(firebaseConfig);
-          </script>
-        <script
-  src="https://code.jquery.com/jquery-3.4.1.js"
-  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
-  crossorigin="anonymous"></script>
-        <script type="text/javascript" src="../static/js/site.js"></script>
-       
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="../static/lib/bootstrap/js/bootstrap.min.js"></script>
-    </body>
-</html>
+              </div>
+          <div class="container-without-gif">
+                  <img id="imageField" src="#" alt="uploaded image" style="visibility: hidden;"/>
+                  <h4 id="imageFieldEmpty">No image is uploaded yet.</h4>
+          </div>
+      </div>
+</main>
+{% endblock %}

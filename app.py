@@ -9,6 +9,7 @@ import json
 import psycopg2
 import psycopg2.errorcodes
 import hashlib
+import base64
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
@@ -60,7 +61,8 @@ def handleImage():
         #TODO: Flash message saying that the gif is saved under my gifs.
         os.remove(os.path.join(app.config['UTILS_FOLDER'], filename))
         #If user logged in, store to database
-        if 'currentUser' in session:
+        authorized = 'currentUser' in session
+        if authorized:
             username = session["currentUser"]["username"]
             with psycopg2.connect(database="imagif", user="imagifcontent", password=config["imagifContent"]) as conn:
                 with conn.cursor() as cur:
@@ -68,11 +70,23 @@ def handleImage():
                         cur.execute("INSERT INTO usergifs (image, username) VALUES (%s, %s)", (image_file.read(), username))
                         print(cur.statusmessage)
                         conn.commit()
-                        flash("Image saved in 'Your Gifs'", "feedback")
 
-        return jsonify({"state": "success", "image" : outputFilename })   
+        return jsonify({"state": "success", "image" : outputFilename, "authorized" : authorized })   
     else:
         return jsonify({"state" : "error"})
+
+@app.route("/yourgifs")
+def showUserGifs():
+    ##Get images from database.
+    images = []
+    with psycopg2.connect(database='imagif', user='imagifcontent', password=config["imagifContent"]) as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT image FROM usergifs WHERE username=%s", (session["currentUser"]["username"],))
+            print(cur.statusmessage, file=sys.stderr)
+            for result in cur:
+                images.append(base64.b64encode(result[0]).decode("utf-8"))
+          
+    return render_template("usergifs.html", images=images, username=session["currentUser"]["username"])
 
 @app.route("/login")
 def loginPage():
@@ -80,8 +94,8 @@ def loginPage():
 
 @app.route("/logout")
 def logout():
-    session.pop('currentUser', None)
     flash('Logged out from user ' + session["currentUser"]["username"] + ".", "feedback")
+    session.pop('currentUser', None)
     return redirect(url_for('serveIndex'))
 
 #TODO: Handle login, add to database after sign up, bring the list of gifs from the database.

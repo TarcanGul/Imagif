@@ -9,11 +9,7 @@ body {
     background-color: bisque;
 }
 
-.body-content {
-    height: 100%;
-}
-
-.body-content main {
+main {
     display: flex;
     background-color: beige;
     text-align: center;
@@ -42,7 +38,7 @@ body {
 }
 
 /*For uploading and downloading.*/
-.form-element{
+.form-element, .form-element-text{
     top: 20vh;
     margin: 5vh;
     width: 50%;
@@ -50,7 +46,7 @@ body {
     margin-left: 5vh;
 }
 
-.form-element input,.form-element select,.form-element button{
+.form-element input,.form-element select,.form-element button, .form-element-text input{
     background-color: whitesmoke;
     align-self: center;
     font-size: 5vh;
@@ -78,6 +74,12 @@ body {
 .form-element input:hover, .form-element button:hover{
     background-color: aquamarine;
 }
+
+.account-form {
+    flex: 1;
+    align-self: flex-start;
+}
+
 
 @media only screen and (max-width: 800px) {
     .body-content main {

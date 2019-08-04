@@ -1,0 +1,9 @@
+.big-gif-container{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.small-gif-container{
+    width: 33%;
+    height: 33%;
+}
