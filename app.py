@@ -59,6 +59,17 @@ def handleImage():
             abort(500)
         #TODO: Flash message saying that the gif is saved under my gifs.
         os.remove(os.path.join(app.config['UTILS_FOLDER'], filename))
+        #If user logged in, store to database
+        if 'currentUser' in session:
+            username = session["currentUser"]["username"]
+            with psycopg2.connect(database="imagif", user="imagifcontent", password=config["imagifContent"]) as conn:
+                with conn.cursor() as cur:
+                    with open(os.path.join(IMAGE_OUTPUT_FOLDER, outputFilename), 'rb') as image_file:
+                        cur.execute("INSERT INTO usergifs (image, username) VALUES (%s, %s)", (image_file.read(), username))
+                        print(cur.statusmessage)
+                        conn.commit()
+                        flash("Image saved in 'Your Gifs'", "feedback")
+
         return jsonify({"state": "success", "image" : outputFilename })   
     else:
         return jsonify({"state" : "error"})
@@ -79,8 +90,7 @@ def handleLogin():
     login_response = request.get_json()
     email = login_response["email"]
     password = login_response["password"]
-    conn = psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"])
-    with conn:
+    with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT * FROM userinfo WHERE email = %s;", (email,))
             result = cur.fetchone()
@@ -103,14 +113,14 @@ def handleSignup():
     username = response["username"]
     print(email, file=sys.stderr)
     try:
-        conn = psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"])
-        cur = conn.cursor()
-        cur.execute("INSERT INTO userinfo VALUES (%s,%s,%s);", (username, email, password.hexdigest()))
-        cur.execute("SELECT currval(pg_get_serial_sequence('userinfo','id'));")
-        user_id = cur.fetchone()
-        conn.commit()
-        session['currentUser'] = {"username" : username ,  "id" : user_id[0]}
-        flash('Sign up successful for ' + username + '!' +" Your gifs will be available anytime under 'Your Gifs'!", "feedback")
+        with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
+            with conn.cursor() as cur:
+                cur.execute("INSERT INTO userinfo VALUES (%s,%s,%s);", (username, email, password.hexdigest()))
+                cur.execute("SELECT currval(pg_get_serial_sequence('userinfo','id'));")
+                user_id = cur.fetchone()
+                conn.commit()
+                session['currentUser'] = {"username" : username ,  "id" : user_id[0]}
+                flash('Sign up successful for ' + username + '!' +" Your gifs will be available anytime under 'Your Gifs'!", "feedback")
     except psycopg2.errors.lookup(psycopg2.errorcodes.UNIQUE_VIOLATION):
         return jsonify({'status' : 'failure', 'reason':'second account with email', 'email' : email})
     finally:
