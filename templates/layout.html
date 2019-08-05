@@ -44,6 +44,7 @@
           {% with message = get_flashed_messages(category_filter=["feedback"])[0] %}
           {% if message %}
             <h5>{{message}}</h5>
+            <button>Okay!</button>
           {% endif %}
           {% endwith %}
         </div>

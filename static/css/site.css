@@ -11,7 +11,6 @@ body {
 
 main {
     display: flex;
-    background-color: beige;
     text-align: center;
     height: 80%;
     align-items: center;
@@ -46,12 +45,18 @@ main {
     margin-left: 5vh;
 }
 
-.form-element input,.form-element select,.form-element button, .form-element-text input{
+a.form-element, .form-element input,.form-element select,.form-element button, .form-element-text input{
     background-color: whitesmoke;
     align-self: center;
     font-size: 5vh;
     flex:1;
+}
 
+a.form-element {
+    border-style: solid;
+    appearance: button;
+    -moz-appearance: button;
+    -webkit-appearance: button;
 }
 
 .form-element select,.form-element button{
@@ -71,7 +76,24 @@ main {
     font-size: 100%;
 }
 
-.form-element input:hover, .form-element button:hover{
+.notification {
+    background-color: brown;
+    display: flex;
+}
+
+.notif-text {
+    flex: 25; 
+}
+
+.notif-text h5{
+    color: aliceblue;
+}
+
+.notif-button {
+    flex: 1;
+}
+
+a.form-element:hover, .form-element input:hover, .form-element button:hover{
     background-color: aquamarine;
 }
 

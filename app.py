@@ -10,6 +10,7 @@ import psycopg2
 import psycopg2.errorcodes
 import hashlib
 import base64
+import datetime
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
@@ -58,7 +59,6 @@ def handleImage():
             outputFilename = algo.use_party_mode(filename)
         else:
             abort(500)
-        #TODO: Flash message saying that the gif is saved under my gifs.
         os.remove(os.path.join(app.config['UTILS_FOLDER'], filename))
         #If user logged in, store to database
         authorized = 'currentUser' in session
@@ -67,7 +67,7 @@ def handleImage():
             with psycopg2.connect(database="imagif", user="imagifcontent", password=config["imagifContent"]) as conn:
                 with conn.cursor() as cur:
                     with open(os.path.join(IMAGE_OUTPUT_FOLDER, outputFilename), 'rb') as image_file:
-                        cur.execute("INSERT INTO usergifs (image, username) VALUES (%s, %s)", (image_file.read(), username))
+                        cur.execute("INSERT INTO usergifs (image, username, name, timestamp) VALUES (%s, %s, %s, %s)", (image_file.read(), username, outputFilename, datetime.datetime.utcnow()))
                         print(cur.statusmessage)
                         conn.commit()
 
@@ -81,10 +81,10 @@ def showUserGifs():
     images = []
     with psycopg2.connect(database='imagif', user='imagifcontent', password=config["imagifContent"]) as conn:
         with conn.cursor() as cur:
-            cur.execute("SELECT image FROM usergifs WHERE username=%s", (session["currentUser"]["username"],))
+            cur.execute("SELECT image, name, timestamp FROM usergifs WHERE username=%s", (session["currentUser"]["username"],))
             print(cur.statusmessage, file=sys.stderr)
             for result in cur:
-                images.append(base64.b64encode(result[0]).decode("utf-8"))
+                images.append((base64.b64encode(result[0]).decode("utf-8"), result[1], result[2]))
           
     return render_template("usergifs.html", images=images, username=session["currentUser"]["username"])
 

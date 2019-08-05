@@ -1,7 +1,7 @@
 var reader = new FileReader();
 
 let uploadingImageView = 
-` <img id="imageField" src="#" alt="uploaded image" style="visibility: hidden;"/>
+` <img id="imageField" src="#" alt="uploaded image" style="visibility: hidden; width: 100%;height: 60vh;"/>
 <h4 id="imageFieldEmpty">No image is uploaded yet.</h4> `
 
 document.querySelector(".container-without-gif").innerHTML = uploadingImageView;
@@ -53,17 +53,20 @@ document.getElementById('upload-form').addEventListener("submit", function(event
             $(".container-without-gif").empty();
             $(".gif-container").empty();
             $(".gif-container").append(`<img id="imageGifField" src="../static/images/outputs/` + data.image + `" alt="uploaded gif image" 
-            style="padding-top: 2vh; height:100%; width:100%"/>`);
+            style="width: 100%;height: 60vh;"/>`);
             $(".gif-container").append('<h3>Enjoy your hot gif!</h3>');
-            $(".gif-container").append(`<a class="form-element" href='../static/images/outputs/` + data.image + `'" download target="_blank"><button class="form-element">Download</button></a>`);
+            $(".gif-container").append(`<a class="btn form-element" href='../static/images/outputs/` + data.image + `'" download target="_blank">Download</a>`);
             document.querySelector("#welcoming-text").innerHTML = "Feel free to convert another!";
             if(data.authorized)
             {
-                document.querySelector(".notification").innerHTML = `<h5>Gif saved under 'Your gifs'.</h5>`;
+                document.querySelector(".notification").innerHTML = `<div class="notif-text"><h5>Gif saved under 'Your gifs'.</h5></div><div class="notif-button"><button id="notif-button">Okay</button></div>`;
             }
             else
             {
-                document.querySelector(".notification").innerHTML = `<h5>If you don't download it now, the image will not be saved. Signed up users enjoy the benefit of autosaving gifs! Consider being a part of us.</h5>`
+                document.querySelector(".notification").innerHTML = 
+                `<div class="notif-text"><h5>If you don't download it now, the image will not be saved. Signed up users enjoy the benefit of autosaving gifs! Consider being a part of us.</h5></div>
+                <div class="notif-button"><button id="notif-button">Okay!</button></div>`
+                
             }
         }
         else
@@ -78,6 +81,10 @@ document.getElementById('upload-form').addEventListener("submit", function(event
     document.querySelector(".container-without-gif").innerHTML = `<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>
     <h2>Processing...</h2>`
 }, false);
+
+document.querySelector("#notif-button").addEventListener("click", function(){
+    document.querySelector('.notification').innerHTML = "";
+})
 
 
 
