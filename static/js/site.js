@@ -1,13 +1,14 @@
 var reader = new FileReader();
 
 let uploadingImageView = 
-` <img id="imageField" src="#" alt="uploaded image" style="visibility: hidden; width: 20vw;height: 20vh;"/>
+` <img id="imageField" src="#" alt="uploaded image" style="visibility: hidden;"/>
 <h4 id="imageFieldEmpty">No image is uploaded yet.</h4> `
 
 document.getElementById("file-input").addEventListener("input", function(){
     if(this.files && this.files[0])
     {
         document.querySelector(".notification").innerHTML = "";
+        document.querySelector(".gif-container").innerHTML = "";
         if(document.querySelector(".container-without-gif").innerHTML == "")
         {
             document.querySelector(".container-without-gif").innerHTML = uploadingImageView;
@@ -15,7 +16,6 @@ document.getElementById("file-input").addEventListener("input", function(){
         reader.onload = function(e){
             document.querySelector('#imageField').setAttribute('src', e.target.result);
             document.querySelector('#imageField').style.visibility = "visible";
-            document.querySelector('#imageField').style.paddingTop = "10px";
             document.querySelector("#imageFieldEmpty").style.visibility = "hidden";
         }  
         reader.readAsDataURL(this.files[0]);
@@ -53,7 +53,7 @@ document.getElementById('upload-form').addEventListener("submit", function(event
             $(".container-without-gif").empty();
             $(".gif-container").empty();
             $(".gif-container").append(`<img id="imageGifField" src="../static/images/outputs/` + data.image + `" alt="uploaded gif image" 
-            style="width: 100%;height: 60vh;"/>`);
+            />`);
             $(".gif-container").append('<h3>Enjoy your hot gif!</h3>');
             $(".gif-container").append(`<a class="btn form-element" href='../static/images/outputs/` + data.image + `'" download target="_blank">Download</a>`);
             document.querySelector("#welcoming-text").innerHTML = "Feel free to convert another!";

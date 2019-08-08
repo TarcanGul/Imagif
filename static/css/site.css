@@ -10,28 +10,39 @@ body {
 
 main {
     display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    height: 100%;
+    padding-top: 1em;
     text-align: center;
-    align-items: center;
-    align-content: center;
+    background-color: aqua;
+}
+
+footer {
+    padding-top: 5em;
 }
 
 .form-container {
     flex: 1;
     display: grid;
+    height:30em;
+    width: 100%;
     grid-auto-columns: 1fr;
-    align-items: center;
-    align-content: center;
-    align-self: center;
+    border: dotted;
 }
 
 .image-container {
     flex: 1;
-    max-height: 80vh;
+    width: 100%;
+    text-align: center;
+    border: dotted;
 }
 
-.image-container img{
-    max-width: 80%;
-    max-height: 400px;
+#imageField, #imageGifField{
+    width: 100%;
+    height:90%;
+    max-height: 25em;
+    border: solid;
 }
 
 /*For uploading and downloading.*/
@@ -46,6 +57,10 @@ main {
 a.form-element, .form-element input,.form-element select,.form-element button, .form-element-text input{
     background-color: whitesmoke;
     font-size: 5vh;
+}
+
+a.btn{
+    size: 60%;
 }
 
 a.form-element {
