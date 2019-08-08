@@ -6,7 +6,8 @@ document.querySelector('#sign-up-form').addEventListener('submit', function(){
     let signUpData = {
         "username" : username,
         "password" : password,
-        "email" : email
+        "email" : email,
+        "joined_user_timestamp" : getCurrentTime()
     };
 
     $.ajax({
@@ -36,6 +37,12 @@ document.querySelector('#sign-up-form').addEventListener('submit', function(){
     })
 });
 
+function onMainPageLoad(data,_callback)
+{
+    window.location.href = data["redirect"];
+    _callback();
+}
+
 document.querySelector('#login-form').addEventListener('submit', function(){
     let email = document.forms["login"]["email"].value;
     let password = document.forms["login"]["password"].value;
@@ -53,11 +60,14 @@ document.querySelector('#login-form').addEventListener('submit', function(){
                 console.log(data["status"]);
                 if(data["status"] === "success")
                 {
-                    window.location.href = data["redirect"];
+                    onMainPageLoad(data, function(){                       
+                         document.querySelector(".notification").innerHTML = 
+                        `<div class="notif-text"><h5>Logged into user ` + data["username"] + `</h5></div>
+                        <div class="notif-button"><button id="notif-button">Okay</button></div>`;
+                    });
                 }
                 else
                 {
-                    console.log(data["reason"]);
                     if(data["reason"] === "password")
                     {
                         document.querySelector(".login-response").innerHTML = 'Wrong password. Please try again.';

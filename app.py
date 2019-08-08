@@ -50,16 +50,21 @@ def handleImage():
         filename = secure_filename(inputFile.filename)
         inputFile.save(os.path.join(app.config['UTILS_FOLDER'], filename))
         chosenAlgorithm = request.form['algorithm']
+        algorithmDisplayName = ""
         outputFilename = ""
         if chosenAlgorithm == 'plain':
             outputFilename = algo.use_plain(filename)
+            algorithmDisplayName = "Plain"
         elif chosenAlgorithm == 'noise_switch':
             outputFilename = algo.use_noise_switch(filename)
+            algorithmDisplayName = "Noise Switch"
         elif chosenAlgorithm == 'party_mode':
             outputFilename = algo.use_party_mode(filename)
+            algorithmDisplayName = "Party Mode!"
         else:
             abort(500)
         os.remove(os.path.join(app.config['UTILS_FOLDER'], filename))
+        time = request.form['timestamp']
         #If user logged in, store to database
         authorized = 'currentUser' in session
         if authorized:
@@ -67,7 +72,7 @@ def handleImage():
             with psycopg2.connect(database="imagif", user="imagifcontent", password=config["imagifContent"]) as conn:
                 with conn.cursor() as cur:
                     with open(os.path.join(IMAGE_OUTPUT_FOLDER, outputFilename), 'rb') as image_file:
-                        cur.execute("INSERT INTO usergifs (image, username, name, timestamp) VALUES (%s, %s, %s, %s)", (image_file.read(), username, outputFilename, datetime.datetime.utcnow()))
+                        cur.execute("INSERT INTO usergifs (image, username, name, algorithm ,timestamp, user_timestamp) VALUES (%s, %s, %s, %s, %s, %s)", (image_file.read(), username, outputFilename, algorithmDisplayName, datetime.datetime.now(), time))
                         print(cur.statusmessage)
                         conn.commit()
 
@@ -81,10 +86,10 @@ def showUserGifs():
     images = []
     with psycopg2.connect(database='imagif', user='imagifcontent', password=config["imagifContent"]) as conn:
         with conn.cursor() as cur:
-            cur.execute("SELECT image, name, timestamp FROM usergifs WHERE username=%s", (session["currentUser"]["username"],))
+            cur.execute("SELECT image, name, algorithm, user_timestamp FROM usergifs WHERE username=%s", (session["currentUser"]["username"],))
             print(cur.statusmessage, file=sys.stderr)
             for result in cur:
-                images.append((base64.b64encode(result[0]).decode("utf-8"), result[1], result[2]))
+                images.append((base64.b64encode(result[0]).decode("utf-8"), result[1], result[2], result[3]))
           
     return render_template("usergifs.html", images=images, username=session["currentUser"]["username"])
 
@@ -111,7 +116,7 @@ def handleLogin():
             if result:
                 if result[2] == hashPassword(password):
                     session['currentUser'] = {"username" : result[0], "id" : result[3]}
-                    return jsonify({"redirect" : "/", "status" : "success"})
+                    return jsonify({"redirect" : "/", "status" : "success", "username" : result[0]})
                 else:
                     return jsonify({"status" : "failure", "reason" : "password"})
             else:
@@ -125,11 +130,13 @@ def handleSignup():
     raw_password.encode("utf-8")
     password = hashlib.sha224(raw_password.encode())
     username = response["username"]
+    user_signup_timestamp = response["joined_user_timestamp"]
     print(email, file=sys.stderr)
     try:
         with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
             with conn.cursor() as cur:
-                cur.execute("INSERT INTO userinfo VALUES (%s,%s,%s);", (username, email, password.hexdigest()))
+                cur.execute("INSERT INTO userinfo (username, email, password, joined_user_timestamp, last_sign_in, joined_user_timestamp_server, last_sign_in_server) VALUES (%s,%s,%s,%s,%s,%s,%s);", 
+                    (username, email, password.hexdigest(), user_signup_timestamp, user_signup_timestamp, datetime.datetime.now(), datetime.datetime.now()))
                 cur.execute("SELECT currval(pg_get_serial_sequence('userinfo','id'));")
                 user_id = cur.fetchone()
                 conn.commit()

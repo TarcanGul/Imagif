@@ -3,17 +3,16 @@
 <link rel="stylesheet" href="../static/css/usergifs.css">
 {% endblock %}
 {% block content %}
-<main>
     <div class="big-gif-container">
         {% for image in images %}
             <div class="small-gif-container">
                 <img src="data:image/gif;base64, {{image[0]}}" alt="image" />
-                <h5>Created at {{(image[2]|string)[:19]}}</h5>
+                <h5>Created at {{(image[3]|string)[:19]}}</h5>
+                <p>Algorithm: {{image[2]}} </p>
                 <a class="btn form-element" download="{{image[1]}}" href="data:image/gif;base64, {{image[0]}}"  target="_blank">Download</a>
             </div>
         {% endfor %}
     </div>
-</main>
 {% endblock %}
 {% block extend_js %}
 {% endblock %}

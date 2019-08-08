@@ -11,16 +11,15 @@ document.getElementById("file-input").addEventListener("input", function(){
     {
         document.querySelector(".notification").innerHTML = "";
         $(".gif-container").empty();
-        if( document.querySelector(".container-without-gif").innerHTML == "")
+        if(document.querySelector(".container-without-gif").innerHTML == "")
         {
             document.querySelector(".container-without-gif").innerHTML = uploadingImageView;
-            document.querySelector("#welcoming-text").innerHTML = "Welcome to Imagif!";
         }
         reader.onload = function(e){
-            document.getElementById("imageField").setAttribute('src', e.target.result);
-            document.getElementById("imageField").style.visibility = "visible";
-            document.getElementById("imageField").style.paddingTop = "2vh"
-            document.getElementById("imageFieldEmpty").style.visibility = "hidden";
+            document.querySelector('#imageField').setAttribute('src', e.target.result);
+            document.querySelector('#imageField').style.visibility = "visible";
+            document.querySelector('#imageField').style.paddingTop = "10px";
+            document.querySelector("#imageFieldEmpty").style.visibility = "hidden";
         }  
         reader.readAsDataURL(this.files[0]);
     }
@@ -29,12 +28,16 @@ document.getElementById("file-input").addEventListener("input", function(){
 document.getElementById('upload-form').addEventListener("submit", function(event){
 
     event.preventDefault();
-    var form = document.getElementById("upload-form");
+    var timestampNode = document.createElement("input");
+    timestampNode.setAttribute("type", "hidden");
+    timestampNode.setAttribute("name", "timestamp");
+    timestampNode.setAttribute("value", getCurrentTime());
+    this.appendChild(timestampNode);
     var files = document.getElementById("file-input").files;
     var algorithmSelect = document.getElementById("algorithm");
     var algorithm = algorithmSelect.options[algorithmSelect.selectedIndex].text;
     console.log(algorithm);
-    var formData = new FormData(form);
+    var formData = new FormData(this);
     console.log(formData);
     $.ajax({
         contentType: false,
@@ -65,7 +68,7 @@ document.getElementById('upload-form').addEventListener("submit", function(event
             {
                 document.querySelector(".notification").innerHTML = 
                 `<div class="notif-text"><h5>If you don't download it now, the image will not be saved. Signed up users enjoy the benefit of autosaving gifs! Consider being a part of us.</h5></div>
-                <div class="notif-button"><button id="notif-button">Okay!</button></div>`
+                <div class="notif-button"><button id="notif-button">Okay</button></div>`
                 
             }
         }
@@ -82,10 +85,9 @@ document.getElementById('upload-form').addEventListener("submit", function(event
     <h2>Processing...</h2>`
 }, false);
 
-document.querySelector("#notif-button").addEventListener("click", function(){
-    document.querySelector('.notification').innerHTML = "";
-})
-
-
-
-
+document.addEventListener('click', function(e){
+    if(e.target && e.target.id === 'notif-button')
+    {
+        document.querySelector('.notification').innerHTML = "";
+    }
+});

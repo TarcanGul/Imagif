@@ -40,26 +40,32 @@
                     </ul>
                 </div>
               </nav>
-        <div class="notification">
-          {% with message = get_flashed_messages(category_filter=["feedback"])[0] %}
-          {% if message %}
-            <h5>{{message}}</h5>
-            <button>Okay!</button>
-          {% endif %}
-          {% endwith %}
-        </div>
         </header>
+        <main>
+            <div class="notification">
+                {% with message = get_flashed_messages(category_filter=["feedback"])[0] %}
+                {% if message %}
+                <div class="notif-text">
+                  <h5>{{message}}</h5>
+                </div>
+                <div class="notif-button">
+                  <button id="notif-button">Okay!</button>        
+                </div>
+                {% endif %}
+                {% endwith %}
+              </div>
         {% block content %}
         {% endblock %}
-            <footer>
-                <hr/>
-                <p>&copy; Tarcan Gul 2019</p>
-            </footer>
-        </div>
+        </main>
+        <footer>
+            <hr/>
+            <p>&copy; Tarcan Gul 2019</p>
+        </footer>
         <script
   src="https://code.jquery.com/jquery-3.4.1.js"
   integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
   crossorigin="anonymous"></script>
+  <script type="text/javascript" src="../static/js/utils.js"></script>
         {% block extend_js %}
         <script type="text/javascript" src="../static/js/site.js"></script>
         {% endblock %}

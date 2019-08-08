@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block content %}
-<main>
       <div class="form-container">
         {% if username %}
         <h1 id="welcoming-text">Welcome {{username}}!</h1>
@@ -23,13 +22,9 @@
           </form>
       </div>
       <div class="image-container">
-              <div class="gif-container" id="gif-contain">
-
-              </div>
           <div class="container-without-gif">
                   <img id="imageField" src="#" alt="uploaded image" style="visibility: hidden;"/>
                   <h4 id="imageFieldEmpty">No image is uploaded yet.</h4>
           </div>
       </div>
-</main>
 {% endblock %}

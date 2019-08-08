@@ -2,7 +2,6 @@
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
-
 }
 
 body {
@@ -12,10 +11,10 @@ body {
 main {
     display: flex;
     text-align: center;
-    height: 80%;
     align-items: center;
     align-content: center;
 }
+
 .form-container {
     flex: 1;
     display: grid;
@@ -28,13 +27,9 @@ main {
 .image-container {
     flex: 1;
     margin-right: 5%;
-    max-height: 100%;
+    height: 60vh;
 }
 
-.image-container #imageField, #imageGifField{
-    height: 100%;
-    width: 100%;
-}
 
 /*For uploading and downloading.*/
 .form-element, .form-element-text{
@@ -47,9 +42,7 @@ main {
 
 a.form-element, .form-element input,.form-element select,.form-element button, .form-element-text input{
     background-color: whitesmoke;
-    align-self: center;
     font-size: 5vh;
-    flex:1;
 }
 
 a.form-element {
@@ -81,17 +74,29 @@ a.form-element {
     display: flex;
 }
 
-.notif-text {
-    flex: 25; 
-}
 
 .notif-text h5{
     color: aliceblue;
 }
 
 .notif-button {
-    flex: 1;
+    align-content: center;
+    margin-left: auto;
 }
+
+#notif-button {
+    background-color: rgb(194, 138, 54);
+    color: aliceblue;
+    border: none;
+    width: 10vw;
+    height: 100%;
+}
+
+#notif-button:hover{
+    background-color: azure;
+    color: black;
+}
+
 
 a.form-element:hover, .form-element input:hover, .form-element button:hover{
     background-color: aquamarine;
@@ -102,9 +107,8 @@ a.form-element:hover, .form-element input:hover, .form-element button:hover{
     align-self: flex-start;
 }
 
-
 @media only screen and (max-width: 800px) {
-    .body-content main {
+    main {
         display: grid;
         grid-template-columns: 1fr;
     }
