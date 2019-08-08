@@ -1,16 +1,13 @@
 var reader = new FileReader();
 
 let uploadingImageView = 
-` <img id="imageField" src="#" alt="uploaded image" style="visibility: hidden; width: 100%;height: 60vh;"/>
+` <img id="imageField" src="#" alt="uploaded image" style="visibility: hidden; width: 20vw;height: 20vh;"/>
 <h4 id="imageFieldEmpty">No image is uploaded yet.</h4> `
-
-document.querySelector(".container-without-gif").innerHTML = uploadingImageView;
 
 document.getElementById("file-input").addEventListener("input", function(){
     if(this.files && this.files[0])
     {
         document.querySelector(".notification").innerHTML = "";
-        $(".gif-container").empty();
         if(document.querySelector(".container-without-gif").innerHTML == "")
         {
             document.querySelector(".container-without-gif").innerHTML = uploadingImageView;
