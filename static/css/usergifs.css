@@ -3,9 +3,34 @@
     grid-template-columns: 1fr 1fr 1fr;
 }
 
+.small-gif-container{
+    max-height: 60vh;
+    margin: 1em;
+}
+
 .small-gif-container img{
     width: 100%;
     height: 40vh;
+}
+
+.button-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    max-height: 10vh;
+
+}
+
+.button-container-element > * {
+    align-self: stretch;
+    margin: 0;
+    width: 100%;
+    height: 10vh;
+    display: block;
+}
+
+.button-container-element{
+    width: 90%;
+    padding-left: 10%;
 }
 
 

@@ -9,7 +9,14 @@
                 <img src="data:image/gif;base64, {{image[0]}}" alt="image" />
                 <h5>Created at {{(image[3]|string)[:19]}}</h5>
                 <p>Algorithm: {{image[2]}} </p>
-                <a class="btn form-element" download="{{image[1]}}" href="data:image/gif;base64, {{image[0]}}"  target="_blank">Download</a>
+                <div class="button-container">
+                    <div class="button-container-element">
+                        <a class="form-element" download="{{image[1]}}" href="data:image/gif;base64, {{image[0]}}"  target="_blank">Download</a>
+                    </div>
+                    <div class="button-container-element">
+                        <button class="form-element">Remove</button>
+                    </div>
+                </div>
             </div>
         {% endfor %}
     </div>
