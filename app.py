@@ -11,6 +11,7 @@ import psycopg2.errorcodes
 import hashlib
 import base64
 import datetime
+from collections import OrderedDict
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
@@ -88,7 +89,8 @@ def showUserGifs():
         with conn.cursor() as cur:
             cur.execute("SELECT image, name, algorithm, user_timestamp FROM usergifs WHERE username=%s", (session["currentUser"]["username"],))
             print(cur.statusmessage, file=sys.stderr)
-            for result in cur:
+            #Reversing here so that we get a order sorted from most recent to least.
+            for result in reversed(cur.fetchall()):
                 images.append((base64.b64encode(result[0]).decode("utf-8"), result[1], result[2], result[3]))
           
     return render_template("usergifs.html", images=images, username=session["currentUser"]["username"])
