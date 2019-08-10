@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="../static/css/site.css" />
   {% block extend_css %}
   {% endblock %}
-    </head>
+  </head>
     <body>
         <header>
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -22,22 +22,22 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                   <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                      <a class="nav-link" href="../static/files/ImagifAlgorithms.zip" download>Download the algorithms library!<span class="sr-only">(current)</span></a>
+                      <a class="nav-link" href="../static/files/ImagifAlgorithms.zip" download>Download the algorithms library!</a>
                     </li>
                   </ul>
                 </div>
-                <div class="right nav-link">
+                <div  id="test" class="right">
                     <ul class="navbar-nav mr-auto">
                     {% if username %}
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <a class="nav-link" href="/yourgifs">Your Gifs</a>
                     </li>
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <a class="nav-link" href="/logout">Log out</a>
                     </li>
                     {% else %}
-                    <li class="nav-item active">
-                        <a href="/login">Signup/Login</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Sign up / Login</a>
                     </li>
                     {% endif %}
                     </ul>

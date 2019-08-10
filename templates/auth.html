@@ -2,35 +2,35 @@
 {% block content %}
       <div class="account-form">
           <form name="sign-up" id="sign-up-form" onsubmit="return false;">
-              <div class="form-element-text">
-                  <p>Username<input autocomplete="off" name="username" required></p>
+              <div class="form-element-text auth-element">
+                  <p>Username<input autocomplete="off" name="username" required/></p>
                 </div>
-              <div class="form-element-text">
-                <p>Email<input autocomplete="off" name="email" type="email" required></p>
+              <div class="form-element-text auth-element">
+                <p>Email<input autocomplete="off" name="email" type="email" required/></p>
               </div>
-              <div class="form-element-text">
+              <div class="form-element-text auth-element">
                 <p>Password (6 characters minimum) <input name="password" type="password" pattern=".{6,}"  required title="6 characters minimum" required/></p>
               </div>
-              <div class="form-element">
+              <div class="form-element auth-element">
                   <h6 class="sign-up-response"></h6>
               </div>
-              <div class="form-element">
+              <div class="form-element auth-element">
                 <p><input id="signUpInput" class="form-element" type="submit" value="Sign up!" /></p>
               </div>
             </form>   
       </div>
       <div class="account-form">
           <form name="login" id="login-form" onsubmit="return false;">
-              <div class="form-element-text">
-                <p>Email<input autocomplete="off" name="email" type="email" required></p>
+              <div class="form-element-text auth-element">
+                <p>Email<input autocomplete="off" name="email" type="email" required/></p>
               </div>
-              <div class="form-element-text">
+              <div class="form-element-text auth-element">
                 <p>Password<input name="password" type="password" required/></p>
               </div>
-              <div class="form-element">
+              <div class="form-element auth-element">
                   <h6 class="login-response"></h6>
               </div>
-              <div class="form-element">
+              <div class="form-element auth-element">
                 <p><input id="loginInput" class="form-element" type="submit" value="Login" /></p>
               </div> 
           </form>   

@@ -5,7 +5,8 @@
 }
 
 body {
-    background-color: bisque;
+    background: linear-gradient(black, burlywood);
+    height: 100%;
 }
 
 main {
@@ -13,14 +14,23 @@ main {
     flex-wrap: wrap;
     flex-direction: row;
     height: 100%;
-    padding-top: 1em;
     text-align: center;
+    margin:1em;
+
 }
 
 footer {
     padding-top: 5em;
 }
 
+nav{
+    background: linear-gradient(whitesmoke, burlywood);
+}
+
+#welcoming-text{
+    color: azure;
+
+}
 .container-without-gif h4, .spinner-border{
     padding-top:25%;
 }
@@ -31,6 +41,7 @@ footer {
     height:30em;
     width: 100%;
     grid-auto-columns: 1fr;
+    vertical-align: middle;
 }
 
 .image-container {
@@ -38,6 +49,13 @@ footer {
     width: 100%;
     text-align: center;  
     vertical-align: middle;
+}
+
+.account-form {
+    height:25em;
+    flex: 1;
+    vertical-align: middle;
+    border:solid rgb(214, 171, 171);
 }
 
 #imageField, #imageGifField{
@@ -48,19 +66,34 @@ footer {
     border: solid;
 }
 
+#imageFieldEmpty{
+    color: whitesmoke;
+}
+
 /*For uploading and downloading.*/
 .form-element, .form-element-text{
     top: 20vh;
-    margin: 5vh;
     width: 50%;
-    height: 25%;
-    margin-left: 5vh;
+    margin: 2em;
+}
+
+.form-element p , .form-element-text p{
+    color:azure;
+}
+
+.auth-element{
+    margin-left:auto;
+    margin-right: auto;
+    text-align: center;
 }
 
 a.form-element, .form-element input,.form-element select,.form-element button, .form-element-text input, button.form-element{
     background-color: whitesmoke;
-    font-size: 5vh;
-    text-align: center;
+    font-size: 4vh;
+}
+
+.form-element input, .form-element-text input{
+    margin:0;
 }
 
 
@@ -90,7 +123,7 @@ a.form-element {
 }
 
 .notification {
-    background-color: brown;
+    background-color: rgb(236, 170, 84);
     display: flex;
 }
 
@@ -117,14 +150,18 @@ a.form-element {
     color: black;
 }
 
-
 a.form-element:hover, .form-element input:hover, .form-element button:hover, button.form-element:hover{
     background-color: aquamarine;
 }
 
-.account-form {
-    flex: 1;
-    align-self: flex-start;
+.navbar-brand, .nav-link{
+    color: rebeccapurple !important;
+    font-weight: bold !important;
+    
+}
+
+.nav-link:hover, .navbar-brand:hover {
+    transform: scaleX(1.02);
 }
 
 @media only screen and (max-width: 800px) {
