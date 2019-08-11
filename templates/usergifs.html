@@ -6,15 +6,16 @@
     <div class="big-gif-container">
         {% for image in images %}
             <div class="small-gif-container">
-                <img src="data:image/gif;base64, {{image[0]}}" alt="image" />
-                <h5>Created at {{(image[3]|string)[:19]}}</h5>
-                <p>Algorithm: {{image[2]}} </p>
+                <img src="data:image/gif;base64, {{image['image']}}" alt="image" />
+                <h5>Created at {{(image['time']|string)[:19]}}</h5>
+                <p>Algorithm: {{image['algorithm']}} </p>
+                <p hidden>{{image['id']}}</p>
                 <div class="button-container">
                     <div class="button-container-element">
-                        <a class="form-element" download="{{image[1]}}" href="data:image/gif;base64, {{image[0]}}"  target="_blank">Download</a>
+                        <a class="form-element" download="{{image['name']}}" href="data:image/gif;base64, {{image[0]}}"  target="_blank">Download</a>
                     </div>
                     <div class="button-container-element">
-                        <button class="form-element">Remove</button>
+                        <button class="remove-button form-element" data-image-id="{{image['id']}}">Remove</button>
                     </div>
                 </div>
             </div>
@@ -22,4 +23,5 @@
     </div>
 {% endblock %}
 {% block extend_js %}
+<script type="text/javascript" src="../static/js/usergifs.js"></script>
 {% endblock %}

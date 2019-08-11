@@ -85,14 +85,19 @@ def handleImage():
 def showUserGifs():
     ##Get images from database.
     images = []
+    
     with psycopg2.connect(database='imagif', user='imagifcontent', password=config["imagifContent"]) as conn:
         with conn.cursor() as cur:
-            cur.execute("SELECT image, name, algorithm, user_timestamp FROM usergifs WHERE username=%s", (session["currentUser"]["username"],))
+            cur.execute("SELECT image, name, algorithm, user_timestamp, id FROM usergifs WHERE username=%s", (session["currentUser"]["username"],))
             print(cur.statusmessage, file=sys.stderr)
             #Reversing here so that we get a order sorted from most recent to least.
             for result in reversed(cur.fetchall()):
-                images.append((base64.b64encode(result[0]).decode("utf-8"), result[1], result[2], result[3]))
-          
+                images.append({ "image" : base64.b64encode(result[0]).decode("utf-8"), 
+                                "name" : result[1], 
+                                "algorithm" : result[2], 
+                                "time" : result[3], 
+                                "id" : result[4]})
+      
     return render_template("usergifs.html", images=images, username=session["currentUser"]["username"])
 
 @app.route("/login")
@@ -150,6 +155,21 @@ def handleSignup():
         cur.close()
         conn.close()
     return jsonify({'status' : 'success', 'redirect' : '/'})
+
+@app.route("/removegif", methods=['POST'])
+def removeGif():
+    client_request = request.get_json()
+    try:
+        with psycopg2.connect(database="imagif", user="imagifcontent", password=config["imagifContent"]) as conn:
+            with conn.cursor() as cur:
+                cur.execute("DELETE FROM usergifs WHERE username=%s AND id=%s", (session["currentUser"]["username"], client_request['id']))
+                flash("Deletion successful!")
+                return jsonify({'status' : 'success'})
+    except Exception as e:
+        print(e, file=sys.stderr) 
+    return jsonify({'status' : 'failure'})
+    
+
 
 # No caching at all for API endpoints.
 @app.after_request

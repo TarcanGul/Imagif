@@ -1,6 +1,8 @@
 .big-gif-container{
     display: grid;
+    grid-column-gap: 10px;
     grid-template-columns: 1fr 1fr 1fr;
+    background-color:burlywood;
 }
 
 .small-gif-container{
