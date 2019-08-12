@@ -3,7 +3,10 @@
 <link rel="stylesheet" href="../static/css/usergifs.css">
 {% endblock %}
 {% block content %}
-    <div class="big-gif-container">
+{% if images|length == 0 %}
+    <p class="text-when-empty">Start making gifs in <a href="/">main page!</a></p>
+{% else %}
+    <div class="big-gif-container">      
         {% for image in images %}
             <div class="small-gif-container">
                 <img src="data:image/gif;base64, {{image['image']}}" alt="image" />
@@ -12,7 +15,7 @@
                 <p hidden>{{image['id']}}</p>
                 <div class="button-container">
                     <div class="button-container-element">
-                        <a class="form-element" download="{{image['name']}}" href="data:image/gif;base64, {{image[0]}}"  target="_blank">Download</a>
+                        <button class="form-element"><a download="{{image['name']}}" href="data:image/gif;base64, {{image[0]}}"  target="_blank">Download</a></button>
                     </div>
                     <div class="button-container-element">
                         <button class="remove-button form-element" data-image-id="{{image['id']}}">Remove</button>
@@ -21,6 +24,7 @@
             </div>
         {% endfor %}
     </div>
+{% endif %}
 {% endblock %}
 {% block extend_js %}
 <script type="text/javascript" src="../static/js/usergifs.js"></script>

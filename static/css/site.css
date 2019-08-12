@@ -1,12 +1,14 @@
 * {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
 body {
-    background: linear-gradient(black, burlywood);
+    max-height: 100%;
     height: 100%;
+    background: linear-gradient(black, burlywood);
+    background-attachment:fixed;
 }
 
 main {
@@ -14,25 +16,32 @@ main {
     flex-wrap: wrap;
     flex-direction: row;
     height: 100%;
-    text-align: center;
-    margin:1em;
-
 }
 
 footer {
-    padding-top: 5em;
+    position: relative;
+    bottom: 0;
 }
 
 nav{
     background: linear-gradient(whitesmoke, burlywood);
 }
 
+.loading-element{
+    color: azure;
+}
+
 #welcoming-text{
     color: azure;
+    text-align: center;
 
 }
-.container-without-gif h4, .spinner-border{
-    padding-top:25%;
+.container-without-gif h4, .container-without-gif h3, .spinner-border{
+    margin-top: 25vh;
+}
+
+.gif-container h3{
+    color: azure;
 }
 
 .form-container {
@@ -52,7 +61,7 @@ nav{
 }
 
 .account-form {
-    height:25em;
+    height:70vh;
     flex: 1;
     vertical-align: middle;
     border:solid rgb(214, 171, 171);
@@ -63,7 +72,9 @@ nav{
     margin: 1em;
     height:90%;
     max-height: 25em;
-    border: solid;
+    border: solid  rgb(214, 171, 171);
+    z-index: 1;
+    background: none;
 }
 
 #imageFieldEmpty{
@@ -84,28 +95,27 @@ nav{
 .auth-element{
     margin-left:auto;
     margin-right: auto;
-    text-align: center;
 }
 
-a.form-element, .form-element input,.form-element select,.form-element button, .form-element-text input, button.form-element{
+.auth-element input{
+    display: block;
+}
+
+button.form-element, .form-element input,.form-element select,.form-element button, .form-element-text input, button.form-element{
     background-color: whitesmoke;
     font-size: 4vh;
 }
 
-.form-element input, .form-element-text input{
-    margin:0;
-}
 
-
-a.form-element {
-    text-decoration: none;
-    color: black;
+button.form-element{
     border-style: solid;
     text-align: center;
     vertical-align: center;
-    appearance: button;
-    -moz-appearance: button;
-    -webkit-appearance: button;
+}
+
+button.form-element a{
+    text-decoration: none;
+    color: black;
 }
 
 .form-element select,.form-element button, button.form-element{
@@ -154,7 +164,7 @@ a.form-element {
 }
 
 a.form-element:hover, .form-element input:hover, .form-element button:hover, button.form-element:hover{
-    background-color: aquamarine;
+    background-color: rgb(243, 225, 201);
 }
 
 .navbar-brand, .nav-link{

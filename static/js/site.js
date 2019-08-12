@@ -55,7 +55,7 @@ document.getElementById('upload-form').addEventListener("submit", function(event
             $(".gif-container").append(`<img id="imageGifField" src="../static/images/outputs/` + data.image + `" alt="uploaded gif image" 
             />`);
             $(".gif-container").append('<h3>Enjoy your hot gif!</h3>');
-            $(".gif-container").append(`<a class="btn form-element" href='../static/images/outputs/` + data.image + `'" download target="_blank">Download</a>`);
+            $(".gif-container").append(`<button class="form-element"><a href='../static/images/outputs/` + data.image + `'" download target="_blank">Download</a></button>`);
             document.querySelector("#welcoming-text").innerHTML = "Feel free to convert another!";
             if(data.authorized)
             {
@@ -78,8 +78,8 @@ document.getElementById('upload-form').addEventListener("submit", function(event
     });
     $(".gif-container").empty();
     $(".container-without-gif").empty();
-    document.querySelector(".container-without-gif").innerHTML = `<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>
-    <h4>Processing...</h4>`;
+    document.querySelector(".container-without-gif").innerHTML = `<div class="spinner-border loading-element" role="status"><span class="sr-only">Loading...</span></div>
+    <h4 class="loading-element">Processing...</h4>`;
 }, false);
 
 document.addEventListener('click', function(e){
