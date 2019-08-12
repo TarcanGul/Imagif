@@ -21,6 +21,8 @@ main {
 footer {
     position: relative;
     bottom: 0;
+    font-weight: bold;
+    color: aliceblue;
 }
 
 nav{
@@ -31,9 +33,18 @@ nav{
     color: azure;
 }
 
-h6.sign-up-response{
+.sign-up-response h6{
     color:azure;
 } 
+
+h6.login-response{
+    color:azure;
+}
+
+input.resend-button{
+    background-color: whitesmoke; 
+    font-size: 2vh;
+}
 
 #welcoming-text{
     color: azure;
@@ -105,7 +116,7 @@ h6.sign-up-response{
     display: block;
 }
 
-button.form-element, .form-element input,.form-element select,.form-element button, .form-element-text input, button.form-element{
+button.form-element, .form-element input,.form-element select,.form-element button, .form-element-text input{
     background-color: whitesmoke;
     font-size: 4vh;
 }
@@ -122,15 +133,10 @@ button.form-element a{
     color: black;
 }
 
-.form-element select,.form-element button, button.form-element{
-    border-radius: 10%;
-}
-
 #submit-button {
     position: relative;
     left: 10vh;
     width: 40%;
-    border-radius: 10%;
 }
 
 #algorithm {

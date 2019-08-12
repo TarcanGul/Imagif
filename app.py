@@ -41,6 +41,14 @@ def hashPassword(raw_password):
     raw_password.encode("utf-8")
     return hashlib.sha224(raw_password.encode()).hexdigest()
 
+@app.errorhandler(404)
+def error404(e):
+    return render_template('error.html', message="404. The page cannot be found. I wish there was but no..."), 404
+
+@app.errorhandler(500)
+def error500(e):
+    return render_template('error.html', message="500. Server error. My bad, don't give any tips..."), 500
+
 @app.route("/")
 def serveIndex():
     if 'currentUser' in session:
@@ -87,7 +95,6 @@ def handleImage():
                         cur.execute("INSERT INTO usergifs (image, username, name, algorithm ,timestamp, user_timestamp) VALUES (%s, %s, %s, %s, %s, %s)", (image_file.read(), username, outputFilename, algorithmDisplayName, datetime.datetime.now(), time))
                         print(cur.statusmessage)
                         conn.commit()
-
         return jsonify({"state": "success", "image" : outputFilename, "authorized" : authorized })   
     else:
         return jsonify({"state" : "error"})
@@ -143,21 +150,25 @@ def handleLogin():
 @app.route("/confirm/<token>")
 def confirmEmail(token):
     try:
-        email = s.loads(token, max_age=3600)
         with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
             with conn.cursor() as cur:
+                email = s.loads(token, max_age=3600)
+                cur.execute("SELECT email_confirmed FROM userinfo SET WHERE email=%s", (email,))
+                email_is_confirmed = cur.fetchone()[0]
+                if(email_is_confirmed):
+                    return redirect(url_for('serveIndex'))
                 cur.execute("UPDATE userinfo SET email_confirmed = %s WHERE email=%s", (True,email,))
                 flash("Email {} has confirmed! Your gifs will be available anytime under 'Your Gifs'!'".format(email), category='feedback')
                 cur.execute("SELECT username FROM userinfo WHERE email=%s", (email,))
                 conn.commit()
                 username = cur.fetchone()[0]
                 print(username, file=sys.stderr)
-                session['currentUser'] = {"username" : username}
-                return redirect(url_for('serveIndex'))
+                session['currentUser'] = {"username" : username}               
     except SignatureExpired:
         return render_template('error.html', message="The signature has expired.")
     except BadTimeSignature:
         return render_template('error.html', message="Bad time signature.")
+    return redirect(url_for('serveIndex'))
 
 @app.route("/handleSignup", methods=['POST'])
 def handleSignup():
@@ -172,17 +183,38 @@ def handleSignup():
     try:
         with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
             with conn.cursor() as cur:
+                cur.execute("SELECT email, email_confirmed FROM userinfo WHERE email=%s", (email, ))
+                result = cur.fetchone()
+                if result:
+                    #Email confirmed already.
+                    if result[1]: 
+                        return jsonify({'status' : 'failure', 'reason':'Already signed up', 'email' : email})
+                    else:
+                        sendEmailConfirmation(email)
+                        return jsonify({'status' : 'failure', 'reason' : 'Email not confirmed', 'email' : email })
                 cur.execute("INSERT INTO userinfo (username, email, password, joined_user_timestamp, last_sign_in, joined_user_timestamp_server, last_sign_in_server, email_confirmed) VALUES (%s,%s,%s,%s,%s,%s,%s,%s);", 
                     (username, email, password.hexdigest(), user_signup_timestamp, user_signup_timestamp, datetime.datetime.now(), datetime.datetime.now(), False))
                 conn.commit()
-                token = s.dumps(email)
-                msg = Message('Confirm Email for Imagif', sender="imagifdontreply@gmail.com", recipients=[email])
-                link = url_for('confirmEmail', token=token, _external=True)
-                msg.body = "Thank you for signing up for imagif! Here is the confirmation link: \n{}".format(link)
-                mail.send(msg)
+                sendEmailConfirmation(email)
     except psycopg2.errors.lookup(psycopg2.errorcodes.UNIQUE_VIOLATION):
-        return jsonify({'status' : 'failure', 'reason':'second account with email', 'email' : email})
+        return jsonify({'status' : 'failure', 'reason':'second account with username', 'email' : email})
     return jsonify({'status' : 'success', 'message':'Email confirmation sent! Please check {}'.format(email)})
+
+'''
+Sends email confirmation.
+'''
+def sendEmailConfirmation(email):
+    token = s.dumps(email)
+    msg = Message('Confirm Email for Imagif', sender=app.config["MAIL_USERNAME"], recipients=[email])
+    link = url_for('confirmEmail', token=token, _external=True)
+    msg.body = "Thank you for signing up for imagif! Here is the confirmation link: \n{}".format(link)
+    mail.send(msg)
+
+@app.route("/retry-email-config", methods=['POST'])
+def resendEmailConfirmation():
+    email = request.args.get('email')
+    sendEmailConfirmation(email)
+    return jsonify({'status' : 'success', 'message':'You seem like you already signed up but you did not confirm your email. Confirmation is resent. Please check {}'.format(email), 'email' : email})
 
 @app.route("/removegif", methods=['POST'])
 def removeGif():

@@ -19,19 +19,37 @@ document.querySelector('#sign-up-form').addEventListener('submit', function(){
         success: function(data){
             if(data['status'] === 'success')
             {
-                document.querySelector(".sign-up-response").innerHTML = data['message'];
+                document.querySelector(".sign-up-response").innerHTML = "<h6>"  + data['message'] + "</h6>";
+                document.querySelector(".sign-up-response").innerHTML += `<input type='submit' class='resend-button' value='Resend confirmation' />`;
+                document.querySelector(".sign-up-button-container").innerHTML = "";
+                /*document.querySelector('.resend-button').addEventListener('click', function(){
+                    $.ajax({
+                        processData: false,
+                        contentType: false,
+                        url: `/retry-email-config?email=${email}`
+                    })
+                });*/
             }
             else
             {
-                if(data['reason'] === "second account with email")
+                if(data['reason'] === "second account with username")
                 {
-                    document.querySelector(".sign-up-response").innerHTML = "There is already an account made with the specified mail. Please try another mail.";
+                    document.querySelector(".sign-up-response").innerHTML = "<h6>Username already taken.</h6>";
+                }
+                else if(data['reason'] === 'Already signed up')
+                {
+                    document.querySelector(".sign-up-response").innerHTML = "<h6>There is already a user with this confirmed email. Please use the login form.</h6>";
+                }
+                else if(data['reason'] === 'Email not confirmed')
+                {
+                    document.querySelector(".sign-up-response").innerHTML = "<h6>It seems like you did not confirm your email. Email confirmation sent. Please check " + data["email"] + ".</h6>";
+                    document.querySelector(".sign-up-response").innerHTML += `<input type='submit' class='resend-button' value='Resend confirmation' />`;
+                    document.querySelector(".sign-up-button-container").innerHTML = "";
                 }
                 else
                 {
                     document.querySelector(".sign-up-response").innerHTML = "Unexpected error occured.";
                 }
-
             }
         }
     })
