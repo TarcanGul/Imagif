@@ -11,13 +11,24 @@ import psycopg2.errorcodes
 import hashlib
 import base64
 import datetime
-from collections import OrderedDict
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
 
 with open("config.json") as config_file:
     config = json.load(config_file)
+
+app.config["MAIL_SERVER"] = config["MAIL_SERVER"]
+app.config["MAIL_USERNAME"] = config["MAIL_USERNAME"]
+app.config["MAIL_PASSWORD"] = config["MAIL_PASSWORD"]
+app.config["MAIL_PORT"] = config["MAIL_PORT"]
+app.config["MAIL_USE_SSL"] = config["MAIL_USE_SSL"]
+app.config["MAIL_USE_TLS"] = config["MAIL_USE_TLS"] 
+
+mail = Mail(app)
+s = URLSafeTimedSerializer(config['secret_key'])
 
 UTILS_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\utils"
 IMAGE_OUTPUT_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\static\\images\\outputs"
@@ -129,6 +140,25 @@ def handleLogin():
             else:
                 return jsonify({"status" : "failure", "reason" : "no account"})
 
+@app.route("/confirm/<token>")
+def confirmEmail(token):
+    try:
+        email = s.loads(token, max_age=3600)
+        with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
+            with conn.cursor() as cur:
+                cur.execute("UPDATE userinfo SET email_confirmed = %s WHERE email=%s", (True,email,))
+                flash("Email {} has confirmed! Your gifs will be available anytime under 'Your Gifs'!'".format(email), category='feedback')
+                cur.execute("SELECT username FROM userinfo WHERE email=%s", (email,))
+                conn.commit()
+                username = cur.fetchone()[0]
+                print(username, file=sys.stderr)
+                session['currentUser'] = {"username" : username}
+                return redirect(url_for('serveIndex'))
+    except SignatureExpired:
+        return render_template('error.html', message="The signature has expired.")
+    except BadTimeSignature:
+        return render_template('error.html', message="Bad time signature.")
+
 @app.route("/handleSignup", methods=['POST'])
 def handleSignup():
     response = request.get_json()
@@ -142,19 +172,17 @@ def handleSignup():
     try:
         with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
             with conn.cursor() as cur:
-                cur.execute("INSERT INTO userinfo (username, email, password, joined_user_timestamp, last_sign_in, joined_user_timestamp_server, last_sign_in_server) VALUES (%s,%s,%s,%s,%s,%s,%s);", 
-                    (username, email, password.hexdigest(), user_signup_timestamp, user_signup_timestamp, datetime.datetime.now(), datetime.datetime.now()))
-                cur.execute("SELECT currval(pg_get_serial_sequence('userinfo','id'));")
-                user_id = cur.fetchone()
+                cur.execute("INSERT INTO userinfo (username, email, password, joined_user_timestamp, last_sign_in, joined_user_timestamp_server, last_sign_in_server, email_confirmed) VALUES (%s,%s,%s,%s,%s,%s,%s,%s);", 
+                    (username, email, password.hexdigest(), user_signup_timestamp, user_signup_timestamp, datetime.datetime.now(), datetime.datetime.now(), False))
                 conn.commit()
-                session['currentUser'] = {"username" : username ,  "id" : user_id[0]}
-                flash('Sign up successful for ' + username + '!' +" Your gifs will be available anytime under 'Your Gifs'!", "feedback")
+                token = s.dumps(email)
+                msg = Message('Confirm Email for Imagif', sender="imagifdontreply@gmail.com", recipients=[email])
+                link = url_for('confirmEmail', token=token, _external=True)
+                msg.body = "Thank you for signing up for imagif! Here is the confirmation link: \n{}".format(link)
+                mail.send(msg)
     except psycopg2.errors.lookup(psycopg2.errorcodes.UNIQUE_VIOLATION):
         return jsonify({'status' : 'failure', 'reason':'second account with email', 'email' : email})
-    finally:
-        cur.close()
-        conn.close()
-    return jsonify({'status' : 'success', 'redirect' : '/'})
+    return jsonify({'status' : 'success', 'message':'Email confirmation sent! Please check {}'.format(email)})
 
 @app.route("/removegif", methods=['POST'])
 def removeGif():

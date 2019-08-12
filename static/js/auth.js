@@ -19,7 +19,7 @@ document.querySelector('#sign-up-form').addEventListener('submit', function(){
         success: function(data){
             if(data['status'] === 'success')
             {
-                window.location.href = data['redirect'];
+                document.querySelector(".sign-up-response").innerHTML = data['message'];
             }
             else
             {
