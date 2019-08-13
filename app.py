@@ -192,6 +192,31 @@ def changeEmail():
     else:
         abort(404)
 
+@app.route("/changePassword", methods=['POST'])
+def changePassword():
+    if request.method == 'POST' and 'currentUser' in session:
+        with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
+            with conn.cursor() as cur:
+                old_password = request.form['old_password']
+                new_password = request.form['new_password']
+                cur.execute('SELECT password FROM userinfo WHERE username=%s AND email=%s', (session["currentUser"]["username"], s.loads(session["currentUser"]["email"], salt=config['session_salt'])))
+                current_password = cur.fetchone()[0]
+                if(hashPassword(old_password) == current_password):
+                    new_hashed_password = hashPassword(new_password)
+                    cur.execute('UPDATE userinfo SET password=%s WHERE username=%s AND email=%s', (new_hashed_password, session["currentUser"]["username"], s.loads(session["currentUser"]["email"], salt=config['session_salt'])))
+                    flash('Your new password has been set!', category='feedback')
+                    return redirect(url_for('profile'))
+                else:
+                    flash('The old password you entered is false. We cannot change your new password.', category='feedback')
+                    return redirect(url_for('profile'))
+                conn.commit()
+        flash('New confirmation sent! Please check your new email.', category='feedback')
+        session.pop('currentUser', None)
+        return redirect(url_for('loginPage'))
+    else:
+        abort(404)
+
+
 
 @app.route("/handleSignup", methods=['POST'])
 def handleSignup():

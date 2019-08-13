@@ -34,11 +34,11 @@ document.querySelector('#sign-up-form').addEventListener('submit', function(){
             {
                 if(data['reason'] === "second account with username")
                 {
-                    document.querySelector(".sign-up-response").innerHTML = "<h6>Username already taken.</h6>";
+                    sendNotification('Username already taken.');
                 }
                 else if(data['reason'] === 'Already signed up')
                 {
-                    document.querySelector(".sign-up-response").innerHTML = "<h6>There is already a user with this confirmed email. Please use the login form.</h6>";
+                    sendNotification('There is already a user with this confirmed email. Please use the login form.')
                 }
                 else if(data['reason'] === 'Email not confirmed')
                 {
@@ -88,11 +88,11 @@ document.querySelector('#login-form').addEventListener('submit', function(){
                 {
                     if(data["reason"] === "password")
                     {
-                        document.querySelector(".login-response").innerHTML = 'Wrong password. Please try again.';
+                        sendNotification('Wrong password. Please try again.');
                     }
                     else if(data["reason"] = "no account")
                     {
-                        document.querySelector(".login-response").innerHTML = 'No account with this email has been created yet. Please sign up.</h3>';
+                        sendNotification('No account with this email has been created yet. Please sign up.');
                     }
                 }   
             }

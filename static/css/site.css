@@ -33,13 +33,13 @@ nav{
     color: azure;
 }
 
-.sign-up-response h6{
+.login-response, .sign-up-response{
+    text-align: center;
+}
+
+.sign-up-response h6, .login-response h6{
     color:azure;
 } 
-
-h6.login-response{
-    color:azure;
-}
 
 input.resend-button{
     background-color: whitesmoke; 
@@ -109,7 +109,7 @@ input.resend-button{
 
 .auth-element{
     margin-left:auto;
-    margin-right: auto;
+    margin-right:auto;
 }
 
 .auth-element input{
@@ -121,13 +121,13 @@ button.form-element, .form-element input,.form-element select,.form-element butt
     font-size: 4vh;
 }
 
-input.form-element{
+input.setting{
     background-color: whitesmoke;
     font-size: 2vh;
 }
 
 
-button.form-element, input.form-element{
+button.form-element, input.setting{
     border-style: solid;
     text-align: center;
     vertical-align: center;

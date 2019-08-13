@@ -27,23 +27,38 @@
     border: solid snow;    
 }
 
-.email-change-area form{
+.email-change-area form, .password-change-area form{
     display: grid;
-    grid-gap: 2vh;
+    grid-gap: 1vh;
     grid-template-columns: 1fr 1fr; 
-    height: 5vh;
+    grid-template-rows: 1fr; 
+    height: 3vh;
     margin-left: auto;
     margin-right: auto;
 }
 
-.email-change-area form *{
+.email-change-area form *, .password-change-area form *{
     display: flex;
     align-self: center;
     justify-content: center;  
 } 
 
-.email-change-area form p{
+.email-change-area form p, .password-change-area form p{
     color: azure;
-    margin: 3vw;
+    margin: 1vw;
+}
+
+#password-confirm{
+    margin-left: 20vw;
+    margin-right: auto;
+}
+
+@media only screen and (max-width: 800px){
+    .settings-container{
+        grid-template-columns: 1fr;
+    }
+    .setting-block{
+        width: 100vw;    
+    }
 }
 
