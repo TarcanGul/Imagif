@@ -135,7 +135,6 @@ def logout():
     session.pop('currentUser', None)
     return redirect(url_for('serveIndex'))
 
-#TODO: Handle login, add to database after sign up, bring the list of gifs from the database.
 @app.route("/handleLogin", methods=['POST'])
 def handleLogin():
     login_response = request.get_json()
@@ -146,13 +145,16 @@ def handleLogin():
             cur.execute("SELECT * FROM userinfo WHERE email = %s;", (email,))
             result = cur.fetchone()
             if result:
-                if result[2] == hashPassword(password):
+                email_confirmed = result[8]
+                if result[2] == hashPassword(password) and email_confirmed:
                     session['currentUser'] = {"username" : result[0], "email" : s.dumps(email, salt=config['session_salt'])}
                     return jsonify({"redirect" : "/", "status" : "success", "username" : result[0]})
+                elif not email_confirmed:
+                    return jsonify({"status" : "failure", "reason" : "email not verified", "email" : email})
                 else:
-                    return jsonify({"status" : "failure", "reason" : "password"})
+                    return jsonify({"status" : "failure", "reason" : "password", "email" : email})
             else:
-                return jsonify({"status" : "failure", "reason" : "no account"})
+                return jsonify({"status" : "failure", "reason" : "no account", "email" : email})
 
 @app.route("/confirm/<token>")
 def confirmEmail(token):
@@ -234,12 +236,7 @@ def handleSignup():
                 cur.execute("SELECT email, email_confirmed FROM userinfo WHERE email=%s", (email, ))
                 result = cur.fetchone()
                 if result:
-                    #Email confirmed already.
-                    if result[1]: 
-                        return jsonify({'status' : 'failure', 'reason':'Already signed up', 'email' : email})
-                    else:
-                        sendEmailConfirmation(email)
-                        return jsonify({'status' : 'failure', 'reason' : 'Email not confirmed', 'email' : email })
+                    return jsonify({'status' : 'failure', 'reason':'Already signed up', 'email' : email})
                 cur.execute("INSERT INTO userinfo (username, email, password, joined_user_timestamp, last_sign_in, joined_user_timestamp_server, last_sign_in_server, email_confirmed) VALUES (%s,%s,%s,%s,%s,%s,%s,%s);", 
                     (username, email, password.hexdigest(), user_signup_timestamp, user_signup_timestamp, datetime.datetime.now(), datetime.datetime.now(), False))
                 conn.commit()
@@ -260,9 +257,9 @@ def sendEmailConfirmation(email):
 
 @app.route("/retry-email-config", methods=['POST'])
 def resendEmailConfirmation():
-    email = request.args.get('email')
+    email = request.get_json()['email']
     sendEmailConfirmation(email)
-    return jsonify({'status' : 'success', 'message':'You seem like you already signed up but you did not confirm your email. Confirmation is resent. Please check {}'.format(email), 'email' : email})
+    return jsonify({'status' : 'success', 'message':'Confirmation is resent. Please check {}'.format(email), 'email' : email})
 
 @app.route("/removegif", methods=['POST'])
 def removeGif():

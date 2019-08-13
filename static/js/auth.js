@@ -19,16 +19,9 @@ document.querySelector('#sign-up-form').addEventListener('submit', function(){
         success: function(data){
             if(data['status'] === 'success')
             {
-                document.querySelector(".sign-up-response").innerHTML = "<h6>"  + data['message'] + "</h6>";
+                sendNotification(data['message']);
                 document.querySelector(".sign-up-response").innerHTML += `<input type='submit' class='resend-button' value='Resend confirmation' />`;
                 document.querySelector(".sign-up-button-container").innerHTML = "";
-                /*document.querySelector('.resend-button').addEventListener('click', function(){
-                    $.ajax({
-                        processData: false,
-                        contentType: false,
-                        url: `/retry-email-config?email=${email}`
-                    })
-                });*/
             }
             else
             {
@@ -40,15 +33,9 @@ document.querySelector('#sign-up-form').addEventListener('submit', function(){
                 {
                     sendNotification('There is already a user with this confirmed email. Please use the login form.')
                 }
-                else if(data['reason'] === 'Email not confirmed')
-                {
-                    document.querySelector(".sign-up-response").innerHTML = "<h6>It seems like you did not confirm your email. Email confirmation sent. Please check " + data["email"] + ".</h6>";
-                    document.querySelector(".sign-up-response").innerHTML += `<input type='submit' class='resend-button' value='Resend confirmation' />`;
-                    document.querySelector(".sign-up-button-container").innerHTML = "";
-                }
                 else
                 {
-                    document.querySelector(".sign-up-response").innerHTML = "Unexpected error occured.";
+                    sendNotification("Unexpected error occured.");
                 }
             }
         }
@@ -90,11 +77,38 @@ document.querySelector('#login-form').addEventListener('submit', function(){
                     {
                         sendNotification('Wrong password. Please try again.');
                     }
-                    else if(data["reason"] = "no account")
+                    else if(data["reason"] === "no account")
                     {
                         sendNotification('No account with this email has been created yet. Please sign up.');
+                    }
+                    else if(data["reason"] === "email not verified")
+                    {
+                        sendNotification("It seems like you did not confirm your email. Email confirmation sent. Please check " + data["email"] + ". If you want to resend confirmation, click resend confirmation in the place of old login button.");
+                        document.querySelector(".login-button-container").innerHTML = `<button class='resend-button form-element'>Resend confirmation</button>`;
+                        //document.querySelector(".login-button-container").innerHTML = "";
                     }
                 }   
             }
         });         
+});
+
+document.addEventListener('click', function(e){
+    if(e.target && e.target.classList.contains('resend-button'))
+    {
+        let email = document.forms["login"]["email"].value;
+        let data = { "email" :  email };
+        $.ajax({
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            url: "/retry-email-config",
+            type: 'POST'
+        })
+        .done(function(data){
+            if(data['status'] === 'success')
+            {
+                sendNotification(data['message']);
+            }
+        })
+    }
 });

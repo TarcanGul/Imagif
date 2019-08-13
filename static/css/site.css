@@ -35,6 +35,7 @@ nav{
 
 .login-response, .sign-up-response{
     text-align: center;
+    background-color: aquamarine;
 }
 
 .sign-up-response h6, .login-response h6{
