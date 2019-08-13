@@ -17,11 +17,11 @@ document.querySelector('#sign-up-form').addEventListener('submit', function(){
         url:'/handleSignup',
         type: 'POST',
         success: function(data){
+            document.querySelector('.sign-up-response').innerHTML = "";
             if(data['status'] === 'success')
             {
                 sendNotification(data['message']);
-                document.querySelector(".sign-up-response").innerHTML += `<input type='submit' class='resend-button' value='Resend confirmation' />`;
-                document.querySelector(".sign-up-button-container").innerHTML = "";
+                document.querySelector(".sign-up-button-container").innerHTML = `<button id="sign-up-resend" class='resend-button form-element'>Resend confirmation</button>`;
             }
             else
             {
@@ -31,7 +31,7 @@ document.querySelector('#sign-up-form').addEventListener('submit', function(){
                 }
                 else if(data['reason'] === 'Already signed up')
                 {
-                    sendNotification('There is already a user with this confirmed email. Please use the login form.')
+                    sendNotification('There is already a user with this confirmed email.')
                 }
                 else
                 {
@@ -39,7 +39,8 @@ document.querySelector('#sign-up-form').addEventListener('submit', function(){
                 }
             }
         }
-    })
+    });
+    document.querySelector('.sign-up-response').innerHTML = `<h4 class="loading-element">Processing...</h4>`;
 });
 
 function onMainPageLoad(data,_callback)
@@ -62,7 +63,7 @@ document.querySelector('#login-form').addEventListener('submit', function(){
             url: '/handleLogin',
             type: 'POST',
             success: function(data){
-                console.log(data["status"]);
+                
                 if(data["status"] === "success")
                 {
                     onMainPageLoad(data, function(){                       
@@ -73,6 +74,7 @@ document.querySelector('#login-form').addEventListener('submit', function(){
                 }
                 else
                 {
+                    document.querySelector('.login-response').innerHTML = "";  
                     if(data["reason"] === "password")
                     {
                         sendNotification('Wrong password. Please try again.');
@@ -84,18 +86,18 @@ document.querySelector('#login-form').addEventListener('submit', function(){
                     else if(data["reason"] === "email not verified")
                     {
                         sendNotification("It seems like you did not confirm your email. Email confirmation sent. Please check " + data["email"] + ". If you want to resend confirmation, click resend confirmation in the place of old login button.");
-                        document.querySelector(".login-button-container").innerHTML = `<button class='resend-button form-element'>Resend confirmation</button>`;
-                        //document.querySelector(".login-button-container").innerHTML = "";
+                        document.querySelector(".login-button-container").innerHTML = `<button id="login-resend" class='resend-button form-element'>Resend confirmation</button>`;
                     }
                 }   
             }
-        });         
+        });
+        document.querySelector('.login-response').innerHTML = `<h4 class="loading-element">Processing...</h4>`;         
 });
 
 document.addEventListener('click', function(e){
     if(e.target && e.target.classList.contains('resend-button'))
     {
-        let email = document.forms["login"]["email"].value;
+        let email = e.target.id == 'login-resend' ? document.forms["login"]["email"].value : document.forms["sign-up"]["email"].value;
         let data = { "email" :  email };
         $.ajax({
             dataType: "json",
