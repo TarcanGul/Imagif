@@ -20,6 +20,7 @@
 
 .setting-block{
     width: 50vw;
+    height: 50vh;
     text-align: center;
     display: grid;
     grid-template-columns: 1fr;
