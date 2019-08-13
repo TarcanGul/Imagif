@@ -1,0 +1,49 @@
+.profile-details{
+    padding-top: 1vh;
+    display: block;
+    width: 100vw;
+    color: azure; 
+    text-align: center;
+}
+
+.settings-container{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    text-align: center;
+}
+
+.setting-block button{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.setting-block{
+    width: 50vw;
+    text-align: center;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    border: solid snow;    
+}
+
+.email-change-area form{
+    display: grid;
+    grid-gap: 2vh;
+    grid-template-columns: 1fr 1fr; 
+    height: 5vh;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.email-change-area form *{
+    display: flex;
+    align-self: center;
+    justify-content: center;  
+} 
+
+.email-change-area form p{
+    color: azure;
+    margin: 3vw;
+}
+

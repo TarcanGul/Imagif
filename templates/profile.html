@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+{% block extend_css %}
+<link rel='stylesheet' href="../static/css/profile.css"/>
+{% endblock %}
+{% block content %}
+<div class='profile-page'>
+    <div class='profile-details'>
+        <h4>Username: {{username}}</h4>
+        <h4>Current Email: {{email}}</h4>
+    </div>
+    <div class='settings-container'>
+        <div class='setting-block'>
+            <button id="email-button" data-redirect="{{url_for('changeEmail')}}" class="setting-button form-element" onclick='return false;'>Change email</button>
+            <div class="email-change-area">
+
+            </div>
+        </div>
+        <div class='setting-block'>
+            <button id="password-button" class="setting-button form-element" onclick='return false;'>Change password</button>
+            <div class="password-change-area">
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extend_js %}
+<script type="text/javascript" src="../static/js/profile.js"></script>
+{% endblock %}

@@ -93,7 +93,6 @@ def handleImage():
                 with conn.cursor() as cur:
                     with open(os.path.join(IMAGE_OUTPUT_FOLDER, outputFilename), 'rb') as image_file:
                         cur.execute("INSERT INTO usergifs (image, username, name, algorithm ,timestamp, user_timestamp) VALUES (%s, %s, %s, %s, %s, %s)", (image_file.read(), username, outputFilename, algorithmDisplayName, datetime.datetime.now(), time))
-                        print(cur.statusmessage)
                         conn.commit()
         return jsonify({"state": "success", "image" : outputFilename, "authorized" : authorized })   
     else:
@@ -101,6 +100,8 @@ def handleImage():
 
 @app.route("/yourgifs")
 def showUserGifs():
+    if 'currentUser' not in session:
+        abort(404)
     ##Get images from database.
     images = []
     
@@ -117,6 +118,12 @@ def showUserGifs():
                                 "id" : result[4]})
       
     return render_template("usergifs.html", images=images, username=session["currentUser"]["username"])
+
+@app.route("/profile")
+def profile():
+    if 'currentUser' not in session:
+        abort(404)
+    return render_template('profile.html', username=session['currentUser']['username'], email=s.loads(session['currentUser']['email'], salt=config["session_salt"]))
 
 @app.route("/login")
 def loginPage():
@@ -140,7 +147,7 @@ def handleLogin():
             result = cur.fetchone()
             if result:
                 if result[2] == hashPassword(password):
-                    session['currentUser'] = {"username" : result[0], "id" : result[3]}
+                    session['currentUser'] = {"username" : result[0], "email" : s.dumps(email, salt=config['session_salt'])}
                     return jsonify({"redirect" : "/", "status" : "success", "username" : result[0]})
                 else:
                     return jsonify({"status" : "failure", "reason" : "password"})
@@ -153,22 +160,38 @@ def confirmEmail(token):
         with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
             with conn.cursor() as cur:
                 email = s.loads(token, max_age=3600)
-                cur.execute("SELECT email_confirmed FROM userinfo SET WHERE email=%s", (email,))
-                email_is_confirmed = cur.fetchone()[0]
-                if(email_is_confirmed):
+                cur.execute("SELECT email_confirmed FROM userinfo WHERE email=%s", (email,))
+                email_is_already_confirmed = cur.fetchone()[0]
+                if email_is_already_confirmed:
                     return redirect(url_for('serveIndex'))
-                cur.execute("UPDATE userinfo SET email_confirmed = %s WHERE email=%s", (True,email,))
+                cur.execute("UPDATE userinfo SET email_confirmed = %s WHERE email=%s", (True,email))
                 flash("Email {} has confirmed! Your gifs will be available anytime under 'Your Gifs'!'".format(email), category='feedback')
                 cur.execute("SELECT username FROM userinfo WHERE email=%s", (email,))
-                conn.commit()
                 username = cur.fetchone()[0]
+                conn.commit()
                 print(username, file=sys.stderr)
-                session['currentUser'] = {"username" : username}               
+                session['currentUser'] = {"username" : username, "email" : s.dumps(email, salt=config['session_salt'])}               
     except SignatureExpired:
         return render_template('error.html', message="The signature has expired.")
     except BadTimeSignature:
         return render_template('error.html', message="Bad time signature.")
     return redirect(url_for('serveIndex'))
+
+@app.route("/changeEmail", methods=['POST'])
+def changeEmail():
+    if request.method == 'POST' and 'currentUser' in session:
+        new_email = request.form['email']
+        with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
+            with conn.cursor() as cur:
+                cur.execute('UPDATE userinfo SET email=%s , email_confirmed=%s WHERE username=%s', (new_email, False, session["currentUser"]["username"]))
+                conn.commit()
+        sendEmailConfirmation(new_email)
+        flash('New confirmation sent! Please check your new email.', category='feedback')
+        session.pop('currentUser', None)
+        return redirect(url_for('loginPage'))
+    else:
+        abort(404)
+
 
 @app.route("/handleSignup", methods=['POST'])
 def handleSignup():

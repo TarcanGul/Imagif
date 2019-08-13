@@ -121,8 +121,13 @@ button.form-element, .form-element input,.form-element select,.form-element butt
     font-size: 4vh;
 }
 
+input.form-element{
+    background-color: whitesmoke;
+    font-size: 2vh;
+}
 
-button.form-element{
+
+button.form-element, input.form-element{
     border-style: solid;
     text-align: center;
     vertical-align: center;
@@ -173,7 +178,7 @@ button.form-element a{
     color: black;
 }
 
-a.form-element:hover, .form-element input:hover, .form-element button:hover, button.form-element:hover{
+a.form-element:hover, .form-element input:hover, .form-element button:hover, button.form-element:hover, input.form-element:hover{
     background-color: rgb(243, 225, 201);
 }
 
