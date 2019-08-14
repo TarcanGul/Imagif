@@ -11,30 +11,37 @@ import psycopg2.errorcodes
 import hashlib
 import base64
 import datetime
+import urllib.parse as urlparse
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
 
-with open("config.json") as config_file:
-    config = json.load(config_file)
+SECRET_KEY = os.environ('secret_key')
 
-app.config["MAIL_SERVER"] = config["MAIL_SERVER"]
-app.config["MAIL_USERNAME"] = config["MAIL_USERNAME"]
-app.config["MAIL_PASSWORD"] = config["MAIL_PASSWORD"]
-app.config["MAIL_PORT"] = config["MAIL_PORT"]
-app.config["MAIL_USE_SSL"] = config["MAIL_USE_SSL"]
-app.config["MAIL_USE_TLS"] = config["MAIL_USE_TLS"] 
+url = urlparse.urlparse(os.environ('DATABASE_URL'))
+DBNAME = url.path[1:]
+USER = url.username
+PASSWORD = url.password
+HOST = url.hostname
+PORT = url.port
+
+app.config["MAIL_SERVER"] = os.environ["MAIL_SERVER"]
+app.config["MAIL_USERNAME"] = os.environ["MAIL_USERNAME"]
+app.config["MAIL_PASSWORD"] = os.environ["MAIL_PASSWORD"]
+app.config["MAIL_PORT"] = os.environ["MAIL_PORT"]
+app.config["MAIL_USE_SSL"] = os.environ["MAIL_USE_SSL"]
+app.config["MAIL_USE_TLS"] = os.environ["MAIL_USE_TLS"] 
 
 mail = Mail(app)
-s = URLSafeTimedSerializer(config['secret_key'])
+s = URLSafeTimedSerializer(SECRET_KEY)
 
 UTILS_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\utils"
 IMAGE_OUTPUT_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\static\\images\\outputs"
 app.config['UTILS_FOLDER'] = UTILS_FOLDER
 app.config['IMAGE_OUTPUT_FOLDER'] = IMAGE_OUTPUT_FOLDER
-app.secret_key = config["secret_key"]
+app.secret_key = SECRET_KEY
 algo = ImagifAlgorithms.Imagif(UTILS_FOLDER, IMAGE_OUTPUT_FOLDER)
 
 def hashPassword(raw_password):
@@ -89,7 +96,7 @@ def handleImage():
         authorized = 'currentUser' in session
         if authorized:
             username = session["currentUser"]["username"]
-            with psycopg2.connect(database="imagif", user="imagifcontent", password=config["imagifContent"]) as conn:
+            with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
                 with conn.cursor() as cur:
                     with open(os.path.join(IMAGE_OUTPUT_FOLDER, outputFilename), 'rb') as image_file:
                         cur.execute("INSERT INTO usergifs (image, username, name, algorithm ,timestamp, user_timestamp) VALUES (%s, %s, %s, %s, %s, %s)", (image_file.read(), username, outputFilename, algorithmDisplayName, datetime.datetime.now(), time))
@@ -105,7 +112,7 @@ def showUserGifs():
     ##Get images from database.
     images = []
     
-    with psycopg2.connect(database='imagif', user='imagifcontent', password=config["imagifContent"]) as conn:
+    with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT image, name, algorithm, user_timestamp, id FROM usergifs WHERE username=%s", (session["currentUser"]["username"],))
             print(cur.statusmessage, file=sys.stderr)
@@ -140,7 +147,7 @@ def handleLogin():
     login_response = request.get_json()
     email = login_response["email"]
     password = login_response["password"]
-    with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
+    with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT * FROM userinfo WHERE email = %s;", (email,))
             result = cur.fetchone()
@@ -159,7 +166,7 @@ def handleLogin():
 @app.route("/confirm/<token>")
 def confirmEmail(token):
     try:
-        with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
+        with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
             with conn.cursor() as cur:
                 email = s.loads(token, max_age=3600)
                 cur.execute("SELECT email_confirmed FROM userinfo WHERE email=%s", (email,))
@@ -183,7 +190,7 @@ def confirmEmail(token):
 def changeEmail():
     if request.method == 'POST' and 'currentUser' in session:
         new_email = request.form['email']
-        with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
+        with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
             with conn.cursor() as cur:
                 cur.execute('UPDATE userinfo SET email=%s , email_confirmed=%s WHERE username=%s', (new_email, False, session["currentUser"]["username"]))
                 conn.commit()
@@ -197,7 +204,7 @@ def changeEmail():
 @app.route("/changePassword", methods=['POST'])
 def changePassword():
     if request.method == 'POST' and 'currentUser' in session:
-        with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
+        with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
             with conn.cursor() as cur:
                 old_password = request.form['old_password']
                 new_password = request.form['new_password']
@@ -231,7 +238,7 @@ def handleSignup():
     user_signup_timestamp = response["joined_user_timestamp"]
     print(email, file=sys.stderr)
     try:
-        with psycopg2.connect(database="imagif", user="imagifauth", password=config["imagifAuth"]) as conn:
+        with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT email, email_confirmed FROM userinfo WHERE email=%s", (email, ))
                 result = cur.fetchone()
@@ -265,7 +272,7 @@ def resendEmailConfirmation():
 def removeGif():
     client_request = request.get_json()
     try:
-        with psycopg2.connect(database="imagif", user="imagifcontent", password=config["imagifContent"]) as conn:
+        with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
             with conn.cursor() as cur:
                 cur.execute("DELETE FROM usergifs WHERE username=%s AND id=%s", (session["currentUser"]["username"], client_request['id']))
                 flash("Deletion successful!")
