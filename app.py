@@ -18,8 +18,8 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignat
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
 
-SECRET_KEY = os.environ('secret_key')
-SALT = os.environ('session_salt')
+SECRET_KEY = os.environ['secret_key']
+SALT = os.environ['session_salt']
 
 url = urlparse.urlparse(os.environ('DATABASE_URL'))
 DBNAME = url.path[1:]

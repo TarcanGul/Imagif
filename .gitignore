@@ -3,3 +3,4 @@ static/images/outputs/
 config.json
 .vscode/
 imagifenv/
+runserv.sh
