@@ -19,6 +19,7 @@ app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
 
 SECRET_KEY = os.environ('secret_key')
+SALT = os.environ('session_salt')
 
 url = urlparse.urlparse(os.environ('DATABASE_URL'))
 DBNAME = url.path[1:]
@@ -130,7 +131,7 @@ def showUserGifs():
 def profile():
     if 'currentUser' not in session:
         abort(404)
-    return render_template('profile.html', username=session['currentUser']['username'], email=s.loads(session['currentUser']['email'], salt=config["session_salt"]))
+    return render_template('profile.html', username=session['currentUser']['username'], email=s.loads(session['currentUser']['email'], salt=SALT))
 
 @app.route("/login")
 def loginPage():
@@ -154,7 +155,7 @@ def handleLogin():
             if result:
                 email_confirmed = result[8]
                 if result[2] == hashPassword(password) and email_confirmed:
-                    session['currentUser'] = {"username" : result[0], "email" : s.dumps(email, salt=config['session_salt'])}
+                    session['currentUser'] = {"username" : result[0], "email" : s.dumps(email, salt=SALT)}
                     return jsonify({"redirect" : "/", "status" : "success", "username" : result[0]})
                 elif not email_confirmed:
                     return jsonify({"status" : "failure", "reason" : "email not verified", "email" : email})
@@ -179,7 +180,7 @@ def confirmEmail(token):
                 username = cur.fetchone()[0]
                 conn.commit()
                 print(username, file=sys.stderr)
-                session['currentUser'] = {"username" : username, "email" : s.dumps(email, salt=config['session_salt'])}               
+                session['currentUser'] = {"username" : username, "email" : s.dumps(email, salt=SALT)}               
     except SignatureExpired:
         return render_template('error.html', message="The signature has expired.")
     except BadTimeSignature:
@@ -208,11 +209,11 @@ def changePassword():
             with conn.cursor() as cur:
                 old_password = request.form['old_password']
                 new_password = request.form['new_password']
-                cur.execute('SELECT password FROM userinfo WHERE username=%s AND email=%s', (session["currentUser"]["username"], s.loads(session["currentUser"]["email"], salt=config['session_salt'])))
+                cur.execute('SELECT password FROM userinfo WHERE username=%s AND email=%s', (session["currentUser"]["username"], s.loads(session["currentUser"]["email"], salt=SALT)))
                 current_password = cur.fetchone()[0]
                 if(hashPassword(old_password) == current_password):
                     new_hashed_password = hashPassword(new_password)
-                    cur.execute('UPDATE userinfo SET password=%s WHERE username=%s AND email=%s', (new_hashed_password, session["currentUser"]["username"], s.loads(session["currentUser"]["email"], salt=config['session_salt'])))
+                    cur.execute('UPDATE userinfo SET password=%s WHERE username=%s AND email=%s', (new_hashed_password, session["currentUser"]["username"], s.loads(session["currentUser"]["email"], salt=SALT)))
                     flash('Your new password has been set!', category='feedback')
                     return redirect(url_for('profile'))
                 else:
