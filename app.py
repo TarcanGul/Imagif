@@ -25,7 +25,6 @@ url = urlparse.urlparse(os.environ['DATABASE_URL'])
 DBNAME = url.path[1:]
 USER = url.username
 PASSWORD = url.password
-print(PASSWORD, file=sys.stderr)
 HOST = url.hostname
 PORT = url.port
 
