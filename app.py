@@ -25,6 +25,7 @@ url = urlparse.urlparse(os.environ['DATABASE_URL'])
 DBNAME = url.path[1:]
 USER = url.username
 PASSWORD = url.password
+print(PASSWORD, file=sys.stderr)
 HOST = url.hostname
 PORT = url.port
 
@@ -38,8 +39,8 @@ app.config["MAIL_USE_TLS"] = os.environ["MAIL_USE_TLS"]
 mail = Mail(app)
 s = URLSafeTimedSerializer(SECRET_KEY)
 
-UTILS_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\utils"
-IMAGE_OUTPUT_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "\\static\\images\\outputs"
+UTILS_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), "utils")
+IMAGE_OUTPUT_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)),"static","images","outputs")
 app.config['UTILS_FOLDER'] = UTILS_FOLDER
 app.config['IMAGE_OUTPUT_FOLDER'] = IMAGE_OUTPUT_FOLDER
 app.secret_key = SECRET_KEY
