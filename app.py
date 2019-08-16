@@ -33,7 +33,7 @@ app.config["MAIL_USERNAME"] = os.environ["MAIL_USERNAME"]
 app.config["MAIL_PASSWORD"] = os.environ["MAIL_PASSWORD"]
 app.config["MAIL_PORT"] = os.environ["MAIL_PORT"]
 app.config["MAIL_USE_SSL"] = os.environ["MAIL_USE_SSL"]
-app.config["MAIL_USE_TLS"] = os.environ["MAIL_USE_TLS"] 
+app.config["MAIL_USE_TLS"] = False
 
 mail = Mail(app)
 s = URLSafeTimedSerializer(SECRET_KEY)
@@ -96,7 +96,7 @@ def handleImage():
         authorized = 'currentUser' in session
         if authorized:
             username = session["currentUser"]["username"]
-            with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
+            with psycopg2.connect(database=DBNAME, host=HOST,user=USER, password=PASSWORD) as conn:
                 with conn.cursor() as cur:
                     with open(os.path.join(IMAGE_OUTPUT_FOLDER, outputFilename), 'rb') as image_file:
                         cur.execute("INSERT INTO usergifs (image, username, name, algorithm ,timestamp, user_timestamp) VALUES (%s, %s, %s, %s, %s, %s)", (image_file.read(), username, outputFilename, algorithmDisplayName, datetime.datetime.now(), time))
@@ -112,7 +112,7 @@ def showUserGifs():
     ##Get images from database.
     images = []
     
-    with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
+    with psycopg2.connect(database=DBNAME, host=HOST, user=USER, password=PASSWORD) as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT image, name, algorithm, user_timestamp, id FROM usergifs WHERE username=%s", (session["currentUser"]["username"],))
             #Reversing here so that we get a order sorted from most recent to least.
@@ -146,7 +146,7 @@ def handleLogin():
     login_response = request.get_json()
     email = login_response["email"]
     password = login_response["password"]
-    with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
+    with psycopg2.connect(database=DBNAME,host=HOST, user=USER, password=PASSWORD) as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT * FROM userinfo WHERE email = %s;", (email,))
             result = cur.fetchone()
@@ -165,7 +165,7 @@ def handleLogin():
 @app.route("/confirm/<token>")
 def confirmEmail(token):
     try:
-        with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
+        with psycopg2.connect(database=DBNAME,host=HOST, user=USER, password=PASSWORD) as conn:
             with conn.cursor() as cur:
                 email = s.loads(token, max_age=3600)
                 cur.execute("SELECT email_confirmed FROM userinfo WHERE email=%s", (email,))
@@ -188,7 +188,7 @@ def confirmEmail(token):
 def changeEmail():
     if request.method == 'POST' and 'currentUser' in session:
         new_email = request.form['email']
-        with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
+        with psycopg2.connect(database=DBNAME, host=HOST, user=USER, password=PASSWORD) as conn:
             with conn.cursor() as cur:
                 cur.execute('UPDATE userinfo SET email=%s , email_confirmed=%s WHERE username=%s', (new_email, False, session["currentUser"]["username"]))
                 conn.commit()
@@ -202,7 +202,7 @@ def changeEmail():
 @app.route("/changePassword", methods=['POST'])
 def changePassword():
     if request.method == 'POST' and 'currentUser' in session:
-        with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
+        with psycopg2.connect(database=DBNAME, host=HOST, user=USER, password=PASSWORD) as conn:
             with conn.cursor() as cur:
                 old_password = request.form['old_password']
                 new_password = request.form['new_password']
@@ -235,7 +235,7 @@ def handleSignup():
     username = response["username"]
     user_signup_timestamp = response["joined_user_timestamp"]
     try:
-        with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
+        with psycopg2.connect(database=DBNAME, host=HOST,user=USER, password=PASSWORD) as conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT email, email_confirmed FROM userinfo WHERE email=%s", (email, ))
                 result = cur.fetchone()
@@ -269,7 +269,7 @@ def resendEmailConfirmation():
 def removeGif():
     client_request = request.get_json()
     try:
-        with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
+        with psycopg2.connect(database=DBNAME, host=HOST,user=USER, password=PASSWORD) as conn:
             with conn.cursor() as cur:
                 cur.execute("DELETE FROM usergifs WHERE username=%s AND id=%s", (session["currentUser"]["username"], client_request['id']))
                 flash("Deletion successful!")
