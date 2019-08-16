@@ -74,7 +74,6 @@ def handleImage():
             print(e, file=sys.stderr)
         if inputFile == None:
             return render_template("index.html", convertedGif=False)
-        print("Hello " + inputFile.filename, file=sys.stderr)
         filename = secure_filename(inputFile.filename)
         inputFile.save(os.path.join(app.config['UTILS_FOLDER'], filename))
         chosenAlgorithm = request.form['algorithm']
@@ -116,7 +115,6 @@ def showUserGifs():
     with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT image, name, algorithm, user_timestamp, id FROM usergifs WHERE username=%s", (session["currentUser"]["username"],))
-            print(cur.statusmessage, file=sys.stderr)
             #Reversing here so that we get a order sorted from most recent to least.
             for result in reversed(cur.fetchall()):
                 images.append({ "image" : base64.b64encode(result[0]).decode("utf-8"), 
@@ -179,7 +177,6 @@ def confirmEmail(token):
                 cur.execute("SELECT username FROM userinfo WHERE email=%s", (email,))
                 username = cur.fetchone()[0]
                 conn.commit()
-                print(username, file=sys.stderr)
                 session['currentUser'] = {"username" : username, "email" : s.dumps(email, salt=SALT)}               
     except SignatureExpired:
         return render_template('error.html', message="The signature has expired.")
@@ -237,7 +234,6 @@ def handleSignup():
     password = hashlib.sha224(raw_password.encode())
     username = response["username"]
     user_signup_timestamp = response["joined_user_timestamp"]
-    print(email, file=sys.stderr)
     try:
         with psycopg2.connect(database=DBNAME, user=USER, password=PASSWORD) as conn:
             with conn.cursor() as cur:
