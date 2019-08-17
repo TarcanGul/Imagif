@@ -15,7 +15,7 @@
                 <p hidden>{{image['id']}}</p>
                 <div class="button-container">
                     <div class="button-container-element">
-                        <button class="form-element"><a download="{{image['name']}}" href="data:image/gif;base64, {{image[0]}}"  target="_blank">Download</a></button>
+                        <button data-image="{{image['image']}}" class="form-element"><a href="data:image/gif;base64, {{image['image']}}"  target="_blank" download="{{image['name']}}">Download</a></button>
                     </div>
                     <div class="button-container-element">
                         <button class="remove-button form-element" data-image-id="{{image['id']}}">Remove</button>
